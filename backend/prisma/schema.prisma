@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ProfileType {
+  REACTIVE
+  LOST
+  INCONSISTENT
+  SEEKING
+  STRUCTURED
+}
+
+enum Level {
+  BEGINNER
+  AWARE
+  CONSISTENT
+  ALIGNED
+  INTEGRATED
+}
+
+enum NotificationType {
+  DAILY_REMINDER
+  STREAK_WARNING
+  MOTIVATIONAL_RESET
+  RECOVERY_FLOW
+  LEVEL_UP
+  SYSTEM
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  email              String         @unique
+  password           String
+  name               String?
+  role               Role           @default(USER)
+  profileType        ProfileType?
+  consciousnessScore Int            @default(0)
+  level              Level          @default(BEGINNER)
+  streak             Int            @default(0)
+  isPremium          Boolean        @default(false)
+  onboardingComplete Boolean        @default(false)
+  language           String         @default("pt-BR")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  lastAccess         DateTime       @default(now())
+  painPoint          String?
+  goal               String?
+  emotionalState     String?
+  timeAvailable      Int?
+  streakFreezeUsed   Boolean        @default(false)
+  streakFreezeDate   DateTime?
+  lastSessionDate    DateTime?
+  currentDay         Int            @default(1)
+  premiumSince       DateTime?
+  premiumUntil       DateTime?
+  notificationTime   String?
+  pushSubscription   Json?
+
+  // System 6 additions
+  onboardingStep     Int            @default(0)
+  profileRevealSeen  Boolean        @default(false)
+  totalSessionTime   Int            @default(0)
+  lastStreakBreak    DateTime?
+
+  contents           Content[]
+  usages             Usage[]
+  favorites          Favorite[]
+  notifications      Notification[]
+  journalEntries     JournalEntry[]
+  events             UserEvent[]
+
+  @@index([email])
+  @@index([isPremium])
+  @@index([lastAccess])
+}
+
+model Content {
+  id           String         @id @default(uuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day          Int
+  language     String         @default("pt-BR")
+  contentJSON  Json
+  isStatic     Boolean        @default(false)
+  isCompleted  Boolean        @default(false)
+  completedAt  DateTime?
+  generatedAt  DateTime       @default(now())
+
+  favorites      Favorite[]
+  journalEntries JournalEntry[]
+
+  @@unique([userId, day])
+  @@index([userId, day])
+}
+
+model Usage {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             DateTime @default(now()) @db.Date
+  tokensUsed       Int      @default(0)
+  promptTokens     Int      @default(0)
+  completionTokens Int      @default(0)
+  modelUsed        String
+  requestsCount    Int      @default(1)
+  costEstimate     Float    @default(0)
+  responseTimeMs   Int?
+
+  @@index([userId, date])
+  @@index([date])
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentId String
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, contentId])
+}
+
+model Notification {
+  id      String           @id @default(uuid())
+  userId  String
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type    NotificationType
+  title   String
+  body    String
+  tone    String?
+  sentAt  DateTime         @default(now())
+  readAt  DateTime?
+
+  @@index([userId, sentAt])
+}
+
+model JournalEntry {
+  id         String   @id @default(uuid())
+  userId     String
+  contentId  String
+  reflection String   @db.Text
+  createdAt  DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model UserEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  eventType String
+  // SESSION_STARTED, BLOCK_READ, SESSION_COMPLETED, JOURNAL_WRITTEN,
+  // STREAK_BROKEN, STREAK_FREEZE_USED, PUSH_SUBSCRIBED, NOTIFICATION_SENT
+  eventData Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([eventType])
+}

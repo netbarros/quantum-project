@@ -1,0 +1,115 @@
+# Quantum Project — Cursor Rules
+# System 6 · Antigravity Edition
+# Coloque em: .cursor/rules/quantum.mdc
+
+---
+
+## CONTEXTO DO PROJETO
+
+Você está auxiliando no desenvolvimento do **Quantum Project**, uma plataforma SaaS de transformação comportamental com IA.
+
+**Sempre consulte antes de gerar código:**
+- `BLUEPRINT_V2.md` → design system, tokens, animações, arquitetura
+- `AGENTS.md` → convenções, padrões, anti-patterns
+- `SDD.md` → schema, API contracts, tipos
+
+---
+
+## REGRAS DE GERAÇÃO
+
+### SEMPRE faça:
+1. TypeScript strict — sem `any`, sem `@ts-ignore`
+2. Tipagem explícita em todos os parâmetros e returns
+3. Importar animations de `/lib/animations.ts`, nunca inline
+4. Usar CSS variables `--q-*` para cores, não hex hardcoded
+5. `Instrument Serif` para textos de conteúdo, `DM Sans` para UI
+6. `whileTap={{ scale: 0.97 }}` em todos os botões
+7. `AnimatePresence` em todas as trocas de tela
+8. React Query para fetching — nunca `useEffect` + fetch
+9. Error boundaries e loading states em rotas
+10. Mobile-first (320px mínimo, touch targets 44px)
+
+### NUNCA faça:
+1. `console.log` (use logger estruturado)
+2. Cores hardcodadas inline — sempre tokens
+3. Fetch direto em componentes
+4. Queries Prisma em middleware
+5. Agentes chamando outros agentes diretamente (use AgentRegistry)
+6. Gradientes genéricos `from-purple-500 to-blue-500` no background
+7. Fontes Inter/Roboto/Arial para conteúdo visível
+8. Spinner genérico como loading state — use skeleton com paleta do sistema
+9. Paywall com lista de features bloqueadas — mostre o que o usuário GANHA
+10. `any` no TypeScript
+
+---
+
+## COMPONENTES — PADRÕES
+
+### Botão primário
+```tsx
+<motion.button
+  whileTap={{ scale: 0.97 }}
+  whileHover={{ scale: 1.01 }}
+  className="w-full h-12 rounded-full bg-[var(--q-accent-8)] text-white font-medium text-base tracking-wide transition-shadow hover:shadow-[var(--q-shadow-glow-accent)]"
+>
+  {children}
+</motion.button>
+```
+
+### Card
+```tsx
+<motion.div
+  variants={VARIANTS.cardReveal}
+  whileHover={{ y: -2, transition: { duration: 0.15 } }}
+  className="rounded-[var(--q-radius-lg)] bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] p-5"
+>
+```
+
+### Texto de conteúdo (direction, affirmation, reflection)
+```tsx
+<p className="font-[family-name:var(--font-instrument)] text-2xl text-[var(--q-text-primary)] leading-relaxed italic">
+  {content.direction}
+</p>
+```
+
+### Input
+```tsx
+<input className="w-full h-12 px-4 rounded-[var(--q-radius-md)] bg-[var(--q-bg-raised)] border border-[var(--q-border-default)] text-[var(--q-text-primary)] placeholder:text-[var(--q-text-tertiary)] focus:outline-none focus:border-[var(--q-accent-8)] transition-colors" />
+```
+
+---
+
+## ANIMAÇÕES — REFERÊNCIA RÁPIDA
+
+```tsx
+// Page enter
+initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
+animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+
+// Card reveal (stagger em lista)
+initial={{ opacity: 0, y: 24, scale: 0.97 }}
+animate={{ opacity: 1, y: 0, scale: 1 }}
+transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+
+// Score delta animation
+initial={{ opacity: 0, y: 20, scale: 0.8 }}
+animate={{ opacity: 1, y: 0, scale: 1 }}
+exit={{ opacity: 0, y: -20, scale: 0.8 }}
+transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+```
+
+---
+
+## ERROS PARA CORRIGIR AUTOMATICAMENTE
+
+Quando você ver esses padrões no código existente, corrija:
+
+1. `text-purple-*` → `text-[var(--q-accent-9)]`
+2. `bg-gray-900` → `bg-[var(--q-bg-depth)]`
+3. `font-sans` em textos de conteúdo → `font-[family-name:var(--font-instrument)]`
+4. `useEffect(() => { fetch('/api/...') }, [])` → hook React Query
+5. `console.log(` → `logger.info(`
+6. `transition={{ duration: 0.3 }}` inline → importar de `/lib/animations.ts`
+7. `<img src=` → `<Image` (next/image)
+8. `onClick` em `<div>` → mover para `<button>` ou `<motion.button>`
