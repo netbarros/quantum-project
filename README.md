@@ -32,7 +32,7 @@ A interface foi construída seguindo a estética **System 6**, focada em profund
 ## 🚀 Tecnologias Core
 
 ### **Frontend** (Next.js PWA)
-- **Framework**: `Next.js 15` (App Router)
+- **Framework**: `Next.js 16` (App Router)
 - **Estilização**: `Tailwind CSS 4.0`
 - **Animações**: `Framer Motion 12`
 - **Estado**: `Zustand` + `React Query` (TanStack)
