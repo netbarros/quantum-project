@@ -16,6 +16,7 @@ async function main() {
     where: { email: 'system@quantumproject.app' },
     update: {
       password: hashedPassword,
+      role: 'ADMIN',
     },
     create: {
       email: 'system@quantumproject.app',
