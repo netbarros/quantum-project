@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../config/database';
+import { AuthRequest } from '../types/api.types';
 
 const NotificationTimeSchema = z.object({
   notificationTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Format must be HH:MM'),
@@ -16,7 +17,7 @@ export async function getSettings(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as AuthRequest).userId!;
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { notificationTime: true, pushSubscription: true, language: true },
@@ -43,7 +44,7 @@ export async function updateNotificationTime(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as AuthRequest).userId!;
     const parsed = NotificationTimeSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: parsed.error.message } });
@@ -65,7 +66,7 @@ export async function updateLanguage(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as AuthRequest).userId!;
     const parsed = LanguageSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: parsed.error.message } });

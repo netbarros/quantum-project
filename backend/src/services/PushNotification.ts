@@ -15,8 +15,8 @@ export class PushNotificationService {
     if (VAPID_EMAIL && VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
       webpush.setVapidDetails(
         VAPID_EMAIL.startsWith('mailto:') ? VAPID_EMAIL : `mailto:${VAPID_EMAIL}`,
-        VAPID_PUBLIC_KEY,
-        VAPID_PRIVATE_KEY
+        VAPID_PUBLIC_KEY.trim(),
+        VAPID_PRIVATE_KEY.trim()
       );
     }
   }

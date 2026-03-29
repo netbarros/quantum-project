@@ -9,7 +9,7 @@ function requireEnv(name: string): string {
       `Check your .env file or container environment.`
     );
   }
-  return value;
+  return value.trim();
 }
 
 export const config = {
@@ -21,9 +21,11 @@ export const config = {
   JWT_REFRESH_SECRET: requireEnv('JWT_REFRESH_SECRET'),
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '15m',
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
-  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || '',
-  APP_URL: process.env.APP_URL || 'http://localhost:3000',
-  VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY || '',
-  VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY || '',
-  VAPID_EMAIL: process.env.VAPID_EMAIL || '',
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY?.trim() || '',
+  APP_URL: process.env.APP_URL?.trim() || 'http://localhost:3000',
+  VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY?.trim() || '',
+  VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY?.trim() || '',
+  VAPID_EMAIL: process.env.VAPID_EMAIL?.trim() || '',
+  /** Opcional — refresh distribuído / rate limit multi-instância (ver docker-compose serviço `redis`) */
+  REDIS_URL: process.env.REDIS_URL?.trim() || '',
 };

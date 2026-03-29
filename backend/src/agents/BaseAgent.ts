@@ -16,13 +16,14 @@ export abstract class BaseAgent {
       sourceAgent: this.name,
       targetAgent,
       timestamp: new Date(),
+      correlationId: message.correlationId,
     };
     return AgentRegistry.getInstance().dispatch(fullMessage);
   }
 
   protected createResponse(
     originalMessage: AgentMessage,
-    payload: Record<string, any>
+    payload: Record<string, unknown>
   ): AgentMessage {
     return {
       type: `${originalMessage.type}_response`,
@@ -31,6 +32,7 @@ export abstract class BaseAgent {
       timestamp: new Date(),
       sourceAgent: this.name,
       targetAgent: originalMessage.sourceAgent,
+      correlationId: originalMessage.correlationId,
     };
   }
 }

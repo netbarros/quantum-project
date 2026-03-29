@@ -1,9 +1,15 @@
+import { randomUUID } from 'crypto';
 import { Response } from 'express';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../config/database';
 import { AuthRequest } from '../types/api.types';
-import { ContentAgent } from '../agents/ContentAgent';
 import { AgentRegistry } from '../agents/AgentRegistry';
 import { AgentMessage } from '../types/agent.types';
+import {
+  evaluateAiCallGate,
+  FREE_TIER_FAVORITES_MAX,
+} from '../middleware/rateLimiterGate';
+import { minHistoryDayForFreeTier } from '../utils/historyWindow';
 
 export const sessionController = {
   async getDailySession(req: AuthRequest, res: Response): Promise<void> {
@@ -28,6 +34,13 @@ export const sessionController = {
         return;
       }
 
+      const correlationId =
+        (typeof req.headers['x-correlation-id'] === 'string'
+          ? req.headers['x-correlation-id'].trim()
+          : Array.isArray(req.headers['x-correlation-id'])
+            ? req.headers['x-correlation-id'][0]?.trim()
+            : '') || randomUUID();
+
       // ── Monetization gate: block free users past day 7 ───────────────────────
       const accessResult = await AgentRegistry.getInstance().dispatch({
         type: 'check_access',
@@ -36,6 +49,7 @@ export const sessionController = {
         timestamp: new Date(),
         sourceAgent: 'SessionController',
         targetAgent: 'MonetizationAgent',
+        correlationId,
       });
 
       if (!accessResult.payload.accessGranted) {
@@ -62,9 +76,27 @@ export const sessionController = {
         include: { favorites: true },
       });
 
-      // If missing (Cache Miss), invoke ContentAgent
+      let aiLimitWarning = false;
+
+      // If missing (Cache Miss), enforce IA daily quota then invoke ContentAgent via Registry
       if (!sessionContent) {
-        const contentAgent = new ContentAgent();
+        const aiGate = await evaluateAiCallGate(user.id);
+        if (!aiGate.allowed) {
+          res.status(429).json({
+            error: `Limite diário de chamadas IA atingido (${aiGate.limit}/dia no plano gratuito).`,
+            todayCalls: aiGate.todayCalls,
+            limit: aiGate.limit,
+            upgradeRequired: true,
+            reason: aiGate.reason,
+            correlationId,
+          });
+          return;
+        }
+
+        if (aiGate.aiLimitWarning) {
+          aiLimitWarning = true;
+        }
+
         const msg: AgentMessage = {
           type: 'generate_content',
           payload: {
@@ -81,9 +113,11 @@ export const sessionController = {
           userId: user.id,
           timestamp: new Date(),
           sourceAgent: 'SessionController',
+          targetAgent: 'ContentAgent',
+          correlationId,
         };
 
-        const result = await contentAgent.execute(msg);
+        const result = await AgentRegistry.getInstance().dispatch(msg);
 
         // Store new session Content
         sessionContent = await prisma.content.create({
@@ -91,12 +125,17 @@ export const sessionController = {
             userId: user.id,
             day: currentDay,
             language: user.language,
-            contentJSON: result.payload.contentJSON,
-            isStatic: result.payload.isStatic,
+            contentJSON: result.payload.contentJSON as Prisma.InputJsonValue,
+            isStatic: Boolean(result.payload.isStatic),
             isCompleted: false,
           },
           include: { favorites: true },
         });
+      }
+
+      if (!sessionContent) {
+        res.status(500).json({ error: 'Internal server error' });
+        return;
       }
 
       const progress = {
@@ -117,6 +156,8 @@ export const sessionController = {
           isFavorite: sessionContent.favorites.length > 0,
         },
         progress,
+        correlationId,
+        ...(aiLimitWarning ? { aiLimitWarning: true as const } : {}),
       });
     } catch (error) {
       console.error('[SessionController] error getting daily session:', error);
@@ -142,6 +183,13 @@ export const sessionController = {
       }
 
       // Delegate all progression logic (score, streak, level, content mark) to ProgressAgent
+      const correlationId =
+        (typeof req.headers['x-correlation-id'] === 'string'
+          ? req.headers['x-correlation-id'].trim()
+          : Array.isArray(req.headers['x-correlation-id'])
+            ? req.headers['x-correlation-id'][0]?.trim()
+            : '') || randomUUID();
+
       const result = await AgentRegistry.getInstance().dispatch({
         type: 'session_complete',
         payload: {
@@ -152,6 +200,7 @@ export const sessionController = {
         timestamp: new Date(),
         sourceAgent: 'SessionController',
         targetAgent: 'ProgressAgent',
+        correlationId,
       });
 
       res.status(200).json({ newProgress: result.payload });
@@ -163,8 +212,22 @@ export const sessionController = {
 
   async getHistory(req: AuthRequest, res: Response): Promise<void> {
     try {
+      const self = await prisma.user.findUnique({
+        where: { id: req.userId! },
+        select: { currentDay: true, isPremium: true, premiumUntil: true },
+      });
+      const now = new Date();
+      const premiumActive =
+        self?.isPremium === true &&
+        (self.premiumUntil === null || self.premiumUntil > now);
+
+      const where: Prisma.ContentWhereInput = { userId: req.userId! };
+      if (!premiumActive && self) {
+        where.day = { gte: minHistoryDayForFreeTier(self.currentDay) };
+      }
+
       const records = await prisma.content.findMany({
-        where: { userId: req.userId! },
+        where,
         orderBy: { day: 'desc' },
         include: { favorites: true },
       });
@@ -228,6 +291,27 @@ export const sessionController = {
         });
         res.status(200).json({ isFavorite: false });
       } else {
+        const account = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { isPremium: true, premiumUntil: true },
+        });
+        const now = new Date();
+        const premiumActive =
+          account?.isPremium === true &&
+          (account.premiumUntil === null || account.premiumUntil > now);
+
+        if (!premiumActive) {
+          const count = await prisma.favorite.count({ where: { userId } });
+          if (count >= FREE_TIER_FAVORITES_MAX) {
+            res.status(403).json({
+              error:
+                `Limite de favoritos no plano gratuito (${FREE_TIER_FAVORITES_MAX}). Faça upgrade para favoritos ilimitados.`,
+              code: 'FAVORITES_LIMIT',
+            });
+            return;
+          }
+        }
+
         await prisma.favorite.create({
           data: { userId, contentId: id },
         });

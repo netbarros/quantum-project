@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../config/database';
 import { AgentRegistry } from '../agents/AgentRegistry';
 import { PersonalizationAgent } from '../agents/PersonalizationAgent';
+import { AuthRequest } from '../types/api.types';
 
 // GET /api/admin/users
 export async function listUsers(
@@ -254,7 +255,11 @@ export async function getInsights(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as AuthRequest).userId;
+    if (!userId) {
+      res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Token inválido' } });
+      return;
+    }
     const agent = AgentRegistry.getInstance().getAgent('PersonalizationAgent') as PersonalizationAgent | undefined;
 
     if (!agent) {

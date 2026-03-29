@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../config/database';
 import { AgentRegistry } from '../agents/AgentRegistry';
+import { AuthRequest } from '../types/api.types';
 
 const SubscribeSchema = z.object({
   subscription: z.object({
@@ -32,7 +33,7 @@ export async function subscribe(
     }
 
     const { subscription } = parsed.data;
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as AuthRequest).userId!;
 
     await prisma.user.update({
       where: { id: userId },
@@ -83,7 +84,7 @@ export async function sendNotification(
               name: u.name ?? 'você',
             },
             timestamp: new Date(),
-            sourceAgent: 'AdminController',
+            sourceAgent: 'NotificationController',
             targetAgent: 'NotificationAgent',
           });
           sentCount++;
@@ -99,7 +100,7 @@ export async function sendNotification(
           userId,
           payload: { userId, daysMissed: 1, level: u.level, name: u.name ?? 'você' },
           timestamp: new Date(),
-          sourceAgent: 'AdminController',
+          sourceAgent: 'NotificationController',
           targetAgent: 'NotificationAgent',
         });
         sentCount = 1;
@@ -118,7 +119,7 @@ export async function getHistory(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as AuthRequest).userId!;
     const limit = parseInt(String(req.query.limit ?? '20'), 10);
     const offset = parseInt(String(req.query.offset ?? '0'), 10);
 

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../config/database';
+import { AuthRequest } from '../types/api.types';
 
 const CreateJournalSchema = z.object({
   contentId: z.string().min(1),
@@ -13,7 +14,7 @@ export async function createJournalEntry(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as AuthRequest).userId!;
     const parsed = CreateJournalSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: parsed.error.message } });
@@ -47,7 +48,7 @@ export async function getJournalEntries(
   next: NextFunction
 ): Promise<void> {
   try {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as AuthRequest).userId!;
     const contentId = req.query.contentId as string | undefined;
 
     const entries = await prisma.journalEntry.findMany({

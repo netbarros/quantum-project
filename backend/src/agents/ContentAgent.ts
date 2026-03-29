@@ -12,7 +12,7 @@ export class ContentAgent extends BaseAgent {
       throw new Error(`[ContentAgent] Unsupported message type: ${message.type}`);
     }
 
-    const inputData = message.payload as ContentInput;
+    const inputData = message.payload as unknown as ContentInput;
 
     // Call the AI Gateway to generate the content (handles retry and fallback internally)
     const response = await AIGateway.generateContent(inputData);

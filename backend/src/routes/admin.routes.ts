@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth.middleware';
+import { adminMiddleware } from '../middleware/admin.middleware';
 import {
   listUsers,
   getUserDetail,
@@ -11,8 +12,8 @@ import { sendNotification } from '../controllers/notification.controller';
 
 const router = Router();
 
-// All admin routes require auth (role check done in controllers for now)
 router.use(authMiddleware);
+router.use(adminMiddleware);
 
 router.get('/admin/users', listUsers);
 router.get('/admin/users/:id', getUserDetail);

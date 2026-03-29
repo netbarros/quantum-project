@@ -10,11 +10,13 @@ async function main() {
   // Create a system user to "own" the global static fallback contents if needed
   // Alternatively, the SDD notes that `Content` has `userId` referencing `User`.
   // Here we just seed a mock admin / system host.
-  const hashedPassword = await bcrypt.hash('quantum123', 10);
+  const hashedPassword = await bcrypt.hash('quantum123', 12);
   
   const systemUser = await prisma.user.upsert({
     where: { email: 'system@quantumproject.app' },
-    update: {},
+    update: {
+      password: hashedPassword,
+    },
     create: {
       email: 'system@quantumproject.app',
       name: 'Quantum System',

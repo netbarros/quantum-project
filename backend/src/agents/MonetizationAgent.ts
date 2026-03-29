@@ -36,6 +36,7 @@ export class MonetizationAgent extends BaseAgent {
     if (!user) {
       return this.createResponse(message, {
         accessGranted: false,
+        accessStatus: 'ACCESS_DENIED',
         reason: 'USER_NOT_FOUND',
       });
     }
@@ -54,6 +55,7 @@ export class MonetizationAgent extends BaseAgent {
       );
       return this.createResponse(message, {
         accessGranted: false,
+        accessStatus: 'ACCESS_DENIED_PAYWALL',
         reason: 'FREE_LIMIT_REACHED',
         currentDay: user.currentDay,
         freeLimit: FREE_DAY_LIMIT,
@@ -62,6 +64,7 @@ export class MonetizationAgent extends BaseAgent {
 
     return this.createResponse(message, {
       accessGranted: true,
+      accessStatus: 'ACCESS_GRANTED',
       isPremium: premiumActive,
       currentDay: user.currentDay,
     });

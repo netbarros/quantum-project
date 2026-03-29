@@ -20,6 +20,7 @@ import { ProgressAgent } from './agents/ProgressAgent';
 import { MonetizationAgent } from './agents/MonetizationAgent';
 import { NotificationAgent } from './agents/NotificationAgent';
 import { PersonalizationAgent } from './agents/PersonalizationAgent';
+import { ContentAgent } from './agents/ContentAgent';
 
 // ── Register all agents ────────────────────────────────────────────────────────
 const registry = AgentRegistry.getInstance();
@@ -27,6 +28,7 @@ registry.register(new ProgressAgent());
 registry.register(new MonetizationAgent());
 registry.register(new NotificationAgent());
 registry.register(new PersonalizationAgent());
+registry.register(new ContentAgent());
 
 const app = express();
 

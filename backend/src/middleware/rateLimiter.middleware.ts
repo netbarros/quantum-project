@@ -2,22 +2,10 @@ import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
 import { AuthRequest } from '../types/api.types';
+import { RATE_LIMITS, evaluateAiCallGate } from './rateLimiterGate';
 
-/**
- * Rate limits per SDD §8.2:
- *   FREE    : 3  AI calls/day  |  20 req/min
- *   PREMIUM : 50 AI calls/day  |  60 req/min
- */
-const RATE_LIMITS = {
-  free: {
-    aiCallsPerDay: 3,
-    requestsPerMinute: 20,
-  },
-  premium: {
-    aiCallsPerDay: 50, // soft limit
-    requestsPerMinute: 60,
-  },
-};
+export type { AiCallGateResult } from './rateLimiterGate';
+export { evaluateAiCallGate, RATE_LIMITS, FREE_TIER_FAVORITES_MAX } from './rateLimiterGate';
 
 // ─── Static limiters ─────────────────────────────────────────────────────────
 
@@ -78,7 +66,7 @@ export const adaptiveLimiter = (
     });
 };
 
-// ─── AI Call daily limiter ────────────────────────────────────────────────────
+// ─── AI Call daily limiter (middleware opcional) ─────────────────────────────
 
 /**
  * Enforces daily AI call quota via Usage table.
@@ -96,49 +84,18 @@ export const aiCallLimiter = (
     return;
   }
 
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-
-  Promise.all([
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: { isPremium: true, premiumUntil: true },
-    }),
-    prisma.usage.aggregate({
-      where: { userId, date: { gte: todayStart } },
-      _sum: { requestsCount: true },
-    }),
-  ])
-    .then(([user, todayUsage]) => {
-      const now = new Date();
-      const isPremiumActive =
-        user?.isPremium === true &&
-        (user.premiumUntil === null || user.premiumUntil > now);
-
-      const todayCalls = todayUsage._sum.requestsCount ?? 0;
-      const limit = isPremiumActive
-        ? RATE_LIMITS.premium.aiCallsPerDay
-        : RATE_LIMITS.free.aiCallsPerDay;
-
-      if (!isPremiumActive && todayCalls >= limit) {
+  evaluateAiCallGate(userId)
+    .then((gate) => {
+      if (!gate.allowed) {
         res.status(429).json({
-          error: `Limite diário de chamadas IA atingido (${limit}/dia no plano gratuito).`,
-          todayCalls,
-          limit,
+          error: `Limite diário de chamadas IA atingido (${gate.limit}/dia no plano gratuito).`,
+          todayCalls: gate.todayCalls,
+          limit: gate.limit,
           upgradeRequired: true,
         });
         return;
       }
-
-      if (isPremiumActive && todayCalls >= RATE_LIMITS.premium.aiCallsPerDay) {
-        console.warn(
-          `[RateLimiter] Premium soft limit reached for userId=${userId} (${todayCalls} calls today)`
-        );
-      }
-
       next();
     })
     .catch(() => next());
 };
-
-export { RATE_LIMITS };
