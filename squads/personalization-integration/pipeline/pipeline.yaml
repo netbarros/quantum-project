@@ -1,0 +1,21 @@
+# Pipeline: Personalization Integration
+# 6 steps: backend integration → checkpoint → frontend → checkpoint → review → checkpoint
+
+steps:
+  - file: steps/step-01-backend-integration.md
+    name: "Integração Backend — PersonalizationAgent → ContentAgent"
+  - file: steps/step-02-checkpoint-backend.md
+    name: "Checkpoint — Revisar Integração Backend"
+  - file: steps/step-03-frontend-build.md
+    name: "Frontend — Broadcast Page + Recharts Migration"
+  - file: steps/step-04-checkpoint-frontend.md
+    name: "Checkpoint — Revisar Frontend"
+  - file: steps/step-05-review.md
+    name: "Code Review — Rosa Revisão"
+  - file: steps/step-06-checkpoint-final.md
+    name: "Checkpoint — Aprovação Final"
+
+checkpoints:
+  - step-02-checkpoint-backend
+  - step-04-checkpoint-frontend
+  - step-06-checkpoint-final

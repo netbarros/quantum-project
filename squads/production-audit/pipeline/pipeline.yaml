@@ -1,0 +1,20 @@
+steps:
+  - file: steps/step-01-ai-gateway.md
+    name: "AI Gateway — Free Model Chain + Health Tracker"
+  - file: steps/step-02-security-redis.md
+    name: "Security Hardening + Redis Integration"
+  - file: steps/step-03-checkpoint-core.md
+    name: "Checkpoint — Revisar AI Gateway + Security"
+  - file: steps/step-04-tests-pwa.md
+    name: "Testes (38+) + PWA Audit"
+  - file: steps/step-05-checkpoint-tests.md
+    name: "Checkpoint — Revisar Testes + PWA"
+  - file: steps/step-06-final-audit.md
+    name: "Auditoria Final — Vera"
+  - file: steps/step-07-checkpoint-approve.md
+    name: "Checkpoint — Aprovação para Produção"
+
+checkpoints:
+  - step-03-checkpoint-core
+  - step-05-checkpoint-tests
+  - step-07-checkpoint-approve

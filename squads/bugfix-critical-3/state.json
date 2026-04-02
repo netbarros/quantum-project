@@ -1,0 +1,17 @@
+{
+  "squad": "bugfix-critical-3",
+  "status": "running",
+  "step": { "current": 1, "total": 4, "label": "Investigação Paralela" },
+  "agents": [
+    { "id": "lia-layout", "name": "Lia Layout", "icon": "🎨", "status": "working", "desk": { "col": 1, "row": 1 } },
+    { "id": "artur-arquitetura", "name": "Artur Arquitetura", "icon": "⚙️", "status": "working", "desk": { "col": 2, "row": 1 } },
+    { "id": "dante-duvida", "name": "Dante Dúvida", "icon": "😈", "status": "working", "desk": { "col": 3, "row": 1 } },
+    { "id": "pietra-premium", "name": "Pietra Premium", "icon": "💎", "status": "working", "desk": { "col": 1, "row": 2 } },
+    { "id": "teo-tokens", "name": "Teo Tokens", "icon": "🎯", "status": "working", "desk": { "col": 2, "row": 2 } },
+    { "id": "eva-extremo", "name": "Eva Extremo", "icon": "🧪", "status": "working", "desk": { "col": 3, "row": 2 } },
+    { "id": "sofia-sintese", "name": "Sofia Síntese", "icon": "🔬", "status": "idle", "desk": { "col": 1, "row": 3 } }
+  ],
+  "handoff": null,
+  "startedAt": "2026-04-02T18:00:00.000Z",
+  "updatedAt": "2026-04-02T18:00:00.000Z"
+}

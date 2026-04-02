@@ -1,0 +1,33 @@
+squad_code: "production-audit"
+purpose: "AI Gateway free chain + Security hardening + Redis + Tests + PWA Lighthouse"
+domain: "automation"
+company:
+  name: "Quantum Project"
+  tone: "Ritualístico, imersivo, transformacional"
+  products: "Plataforma SaaS de transformação comportamental com IA"
+language: "pt-BR"
+context:
+  trigger: "manual"
+  systems: "Express + TypeScript + Prisma + PostgreSQL + Redis + OpenRouter + Next.js PWA"
+  frequency: "once"
+  tasks:
+    - id: "ai-gateway"
+      title: "Rewrite AIGateway com free model chain + health tracking"
+      description: "Substituir cadeia Claude+GPT-4o-mini por 4 modelos free com health tracker, rate limit rotation (429), skip por 10min após 3 falhas, log de modelo por request na Usage table. Paid fallback opcional via OPENROUTER_ALLOW_PAID."
+      current_state: "AIGateway.ts (130 linhas) — 2 modelos hardcoded, sem health tracking, sem 429 handling"
+    - id: "security"
+      title: "Security hardening completo"
+      current_state: "JWT header-only, Zod 6/10, Helmet CSP disabled, CORS hardcoded localhost"
+    - id: "redis"
+      title: "Redis integration + distributed rate limiting"
+      current_state: "docker-compose tem Redis mas backend nunca conecta. Rate limiter in-memory."
+    - id: "tests"
+      title: "Vitest suites para 3 agents/services + AI Gateway fallback"
+      current_state: "4 test suites existem. NotificationAgent, ProgressAgent, PushNotification sem teste."
+    - id: "pwa"
+      title: "Lighthouse PWA >= 90"
+      current_state: "SVG icons ok, PNG placeholders 68 bytes, manifest existe, SW manual."
+tools_needed: ["code_read", "code_write"]
+investigation:
+  enabled: false
+target_formats: []

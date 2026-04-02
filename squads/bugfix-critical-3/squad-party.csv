@@ -1,0 +1,8 @@
+id,name,title,icon,execution,path
+lia-layout,Lia Layout,Especialista UX & Data Flow,🎨,subagent,./agents/lia-layout.agent.md
+artur-arquitetura,Artur Arquitetura,Arquiteto Técnico,⚙️,subagent,./agents/artur-arquitetura.agent.md
+dante-duvida,Dante Dúvida,Advogado do Diabo,😈,subagent,./agents/dante-duvida.agent.md
+pietra-premium,Pietra Premium,Especialista Monetização & Freemium,💎,subagent,./agents/pietra-premium.agent.md
+teo-tokens,Teo Tokens,Design Director — System 6,🎯,subagent,./agents/teo-tokens.agent.md
+eva-extremo,Eva Extremo,Tester E2E,🧪,subagent,./agents/eva-extremo.agent.md
+sofia-sintese,Sofia Síntese,Sintetizadora & Revisora,🔬,inline,./agents/sofia-sintese.agent.md

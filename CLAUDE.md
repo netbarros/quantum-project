@@ -1,61 +1,110 @@
-# CLAUDE.md
+# CLAUDE.md — Quantum Project
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Behavioral Transformation SaaS · System 6 · Antigravity Edition
 
-## Project Overview
-
-**Quantum Project** is a behavioral transformation SaaS platform powered by AI. It's a mobile-first PWA guiding users through a 365-day identity evolution journey.
-
-- **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS 4, Framer Motion
-- **Backend**: Express + TypeScript, Prisma ORM, PostgreSQL, Redis
-- **AI Layer**: OpenRouter gateway with Claude/GPT fallback chain
-- **Architecture**: 5-Agent Mesh (ContentAgent, PersonalizationAgent, ProgressAgent, NotificationAgent, MonetizationAgent)
+> **Leia este arquivo completo antes de qualquer ação no repositório.**
 
 ---
 
-## Commands
+## Visão Geral
 
-### Development (Full Stack)
+**Quantum Project** é uma plataforma SaaS de transformação comportamental movida por IA.
+Guia usuários em uma jornada de 365 dias de evolução de identidade.
 
-```bash
-# Start all services (PostgreSQL + Redis + Backend + Frontend)
-docker-compose up -d
+- **Repositório local**: C:/lotus/devocional
+- **GitHub**: https://github.com/netbarros/quantum-project
+- **Frontend**: Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · Framer Motion
+- **Backend**: Express + TypeScript · Prisma ORM · PostgreSQL · Redis
+- **IA**: OpenRouter → Claude 3.5 Sonnet (primary) → GPT-4o-mini (fallback) → Static
+- **Arquitetura**: 5-Agent Mesh (ContentAgent · PersonalizationAgent · ProgressAgent · NotificationAgent · MonetizationAgent)
 
-# Backend only
-cd backend && npm run dev          # tsx watch mode on port 3001
+---
 
-# Frontend only
-cd frontend && npm run dev       # Next.js dev server on port 3000
+## Documentação obrigatória (ler antes de mudanças arquiteturais)
+
+```
+docs/BLUEPRINT_V2.md          → design system, tokens --q-*, animações, padrões de componente
+docs/BLUEPRINT.md             → blueprint original (referência histórica)
+docs/AGENTS.md                → convenções TypeScript, React, Tailwind, Framer Motion, backend
+docs/PREMIUM_SKILLS.md        → implementações de referência com código completo
+docs/SDD.md                   → schema Prisma, contratos de API, tipos
+docs/PHASES.md                → roadmap e status atual de cada fase
+docs/QUANTUM_DESIGN_SYSTEM.md → design system completo extraído das telas reais
+docs/PR-00.md                 → pull request principal
+docs/PR-COMPLETE-COMPLEMENT-PR00.md → complemento do PR
+.cursor/rules/quantum.mdc     → regras automáticas do Cursor
 ```
 
-### Database
+---
+
+## Estado Atual do Projeto
+
+### ✅ Funciona (confirmado pelas screenshots)
+
+- Auth JWT completo (login/register/refresh)
+- Onboarding 6 steps com cards visuais + progress bar
+- Profile Reveal com cosmic orb fotográfico
+- Paywall narrativo (orb com score, timeline Dia 7→365)
+- Checkout com order bump (UI implementada)
+- Design system visual (paleta, fontes, componentes)
+
+### 🔴 Bugs Críticos P1 (corrigir ANTES de qualquer nova feature)
+
+1. **Score = 0 pts** → ProgressAgent não conectado ao `POST /api/session/:id/complete`
+2. **History vazia** → `GET /api/sessions/history` não retorna dados ou não implementado
+3. **Navbar no onboarding** → adicionar guard `if (pathname.startsWith('/onboarding')) return null`
+
+### 🟡 Fases Pendentes
+
+- **Fase 7**: NotificationAgent + PWA Push Notifications + Settings page + Streak Freeze
+- **Fase 8**: PersonalizationAgent (análise comportamental) + Journal + Admin Panel
+- **Fase 9**: Redis rate limiting + auditoria segurança + testes + Lighthouse PWA ≥ 90
+
+---
+
+## Comandos
+
+### Desenvolvimento (Full Stack)
+
+```bash
+# Todos os serviços (PostgreSQL + Redis + Backend + Frontend)
+docker-compose up -d
+
+# Backend apenas
+cd backend && npm run dev          # tsx watch mode na porta 3001
+
+# Frontend apenas
+cd frontend && npm run dev          # Next.js dev server na porta 3000
+```
+
+### Banco de Dados
 
 ```bash
 cd backend
-npx prisma migrate dev             # Run migrations in dev mode
-npx prisma migrate deploy           # Run migrations in production
-npx prisma generate                 # Generate Prisma client
-npx prisma studio                   # Open Prisma Studio GUI
-npm run prisma:seed                 # Seed database with initial data
+npx prisma migrate dev             # Rodar migrations em dev
+npx prisma migrate deploy          # Rodar migrations em produção
+npx prisma generate                # Gerar Prisma client
+npx prisma studio                  # Abrir Prisma Studio GUI
+npm run prisma:seed                # Seed com dados iniciais
 ```
 
-### Testing
+### Testes
 
 ```bash
-# Backend tests
-cd backend && npm test              # Run Vitest once
-cd backend && npm run test:watch   # Run Vitest in watch mode
+# Backend
+cd backend && npm test             # Vitest once
+cd backend && npm run test:watch   # Vitest watch mode
 
 # Frontend E2E
-cd frontend && npm run test:e2e    # Playwright tests
+cd frontend && npm run test:e2e    # Playwright
 ```
 
 ### Build & Deploy
 
 ```bash
 # Backend
-cd backend && npm run build        # TypeScript compilation to dist/
-cd backend && npm start            # Run compiled code
+cd backend && npm run build        # TypeScript → dist/
+cd backend && npm start            # Rodar código compilado
 
 # Frontend
 cd frontend && npm run build       # Next.js production build
@@ -64,34 +113,35 @@ cd frontend && npm run lint        # ESLint check
 
 ---
 
-## Architecture
+## Arquitetura
 
-### Monorepo Structure
+### Estrutura do Monorepo
 
 ```
 quantum-project/
 ├── frontend/              # Next.js 16 PWA
-│   ├── src/app/           # App Router - route groups (auth), (protected)
-│   ├── src/components/    # UI components organized by domain
-│   ├── src/hooks/         # React Query hooks for data fetching
+│   ├── src/app/           # App Router — route groups (auth), (protected)
+│   ├── src/components/    # Componentes organizados por domínio
+│   ├── src/hooks/         # React Query hooks para data fetching
 │   ├── src/lib/           # Utilities (animations.ts, api.ts)
 │   └── src/stores/        # Zustand global state
 ├── backend/               # Express API
-│   ├── src/agents/        # Agent system (BaseAgent, AgentRegistry)
+│   ├── src/agents/        # Sistema de agentes (BaseAgent, AgentRegistry)
 │   ├── src/controllers/   # Route handlers
 │   ├── src/middleware/    # Auth, rate limiting, validation
-│   ├── src/routes/        # API route definitions
+│   ├── src/routes/        # Definições de rotas da API
 │   ├── src/services/      # AIGateway, TokenTracker, PushNotification
 │   └── prisma/            # Schema, migrations, seed.ts
-└── docs/                  # BLUEPRINT.md, SDD.md, architecture diagrams
+└── docs/                  # Toda a documentação do projeto
 ```
 
-### Agent System (PicoClaw v2)
+### Sistema de Agentes (PicoClaw v2)
 
-All agents extend `BaseAgent` and communicate via `AgentRegistry`:
+Todos os agentes estendem `BaseAgent` e se comunicam via `AgentRegistry`.
+**NUNCA chamar agentes diretamente — sempre usar o registry.**
 
 ```typescript
-// BaseAgent.ts - Never call agents directly, always use registry
+// BaseAgent.ts
 abstract class BaseAgent {
   abstract execute(message: AgentMessage): Promise<AgentMessage>;
   async communicate(
@@ -100,22 +150,20 @@ abstract class BaseAgent {
   );
 }
 
-// AgentRegistry.ts - Singleton orchestrator
-AgentRegistry.getInstance().dispatch(message); // Route messages between agents
-AgentRegistry.getInstance().register(agent); // Register new agents
+// AgentRegistry.ts — Singleton orchestrator
+AgentRegistry.getInstance().dispatch(message); // Rotear mensagens entre agentes
+AgentRegistry.getInstance().register(agent); // Registrar novo agente
 ```
 
-**Agents**: ContentAgent (session generation), PersonalizationAgent (behavior analysis), ProgressAgent (consciousnessScore/levels), NotificationAgent (PWA push), MonetizationAgent (subscription enforcement).
+**Agentes**: ContentAgent (geração de sessão) · PersonalizationAgent (análise comportamental) · ProgressAgent (consciousnessScore/levels/streak) · NotificationAgent (PWA push) · MonetizationAgent (enforcement de subscription).
 
 ### AI Gateway
 
-OpenRouter integration with automatic fallback chain:
-
 ```typescript
-// AIGateway.ts - Always use this, never call OpenRouter directly
-AIGateway.generateContent(input); // Returns AIResponse with fallback to static content
+// AIGateway.ts — Sempre usar este serviço, nunca chamar OpenRouter diretamente
+AIGateway.generateContent(input); // Retorna AIResponse com fallback automático
 
-// Fallback chain: Claude 3.5 Sonnet → GPT-4o-mini → Static Content
+// Cadeia de fallback: Claude 3.5 Sonnet → GPT-4o-mini → Conteúdo Estático
 ```
 
 ### Frontend Data Flow
@@ -126,119 +174,179 @@ Components → Hooks (React Query) → API Client → Backend API
             Zustand (auth, session state)
 ```
 
-- **React Query** for all server state - never `useEffect` + fetch
-- **Zustand** only for client state (auth, UI preferences)
-- Custom hooks in `src/hooks/` wrap all API calls
+### Route Groups
+
+**Frontend** (Next.js route groups):
+
+- `(auth)/` — Login, register (sem navbar)
+- `(protected)/` — Todas as páginas autenticadas (com Navbar)
+  - `dashboard/` · `session/` · `profile/` · `settings/` · `admin/`
+
+**Backend** (prefixos de rota):
+
+- `/api/auth/*` — Autenticação
+- `/api/session/*` — Sessões diárias
+- `/api/progress/*` — Progresso do usuário
+- `/api/notifications/*` — Push notifications
+- `/api/settings/*` — Preferências do usuário
+- `/api/admin/*` — Operações admin (requer role ADMIN)
 
 ---
 
-## Key Conventions
+## Regras Absolutas — Design System (System 6)
 
-### System 6 Design System
+### Fontes (OBRIGATÓRIO)
 
-**Colors**: Use CSS variables, never hardcoded hex
+```
+Instrument Serif (italic) → direction, reflection, affirmation, preços, headlines de conteúdo
+DM Sans                   → UI, labels, botões, body text, metadata
+Pacifico                  → logo "Quantum" + título "Seu Espaço"
+NUNCA                     → Inter, Roboto, Arial, system-ui em textos visíveis
+```
 
-- Background: `--q-bg-depth` (#080810), `--q-bg-surface`, `--q-bg-raised`
-- Accent: `--q-accent-8` (primary), `--q-accent-9` (hover)
-- Text: `--q-text-primary`, `--q-text-secondary`, `--q-text-tertiary`
+### Cores (NUNCA hex hardcoded — sempre tokens)
 
-**Typography**:
+```css
+/* Backgrounds */
+--q-bg-void: #080810 /* Pure space black */ --q-bg-depth: #0a0a14
+  /* App shell */ --q-bg-surface: #111120 /* Cards base */
+  --q-bg-raised: #181828 /* Elevated */ /* Accent — Consciousness Purple */
+  --q-accent-7: #7c3aed /* CTAs, botões */ --q-accent-8: #8b5cf6
+  /* Primary accent */ --q-accent-9: #a78bfa /* Hover states */ /* Text */
+  --q-text-primary: #f0f0fa --q-text-secondary: #8b8ba8
+  --q-text-tertiary: #5a5a6e --q-text-accent: #a78bfa /* Labels de input */
+  /* Borders */ --q-border-default: rgba(255, 255, 255, 0.08)
+  --q-border-accent: rgba(124, 58, 237, 0.65);
+```
 
-- `font-[family-name:var(--font-instrument)]` - Content (headlines, affirmations, reflections)
-- `font-[family-name:var(--font-dm-sans)]` - UI elements, labels
-
-**Animations**: Import from `lib/animations.ts`, never inline
+### Animações (sempre via `/lib/animations.ts`, nunca inline)
 
 ```typescript
 import { VARIANTS, TRANSITIONS } from '@/lib/animations';
 
+// Page enter
+<motion.div
+  variants={VARIANTS.page}
+  initial="initial"
+  animate="animate"
+  exit="exit"
+/>
+
+// Cards com stagger
 <motion.div variants={VARIANTS.cardReveal} transition={TRANSITIONS.spring} />
 ```
 
-**Button Pattern**: Always include `whileTap` and specific styling
+### Padrão de Botão (SEMPRE incluir whileTap)
 
 ```typescript
 <motion.button
   whileTap={{ scale: 0.97 }}
   whileHover={{ scale: 1.01 }}
-  className="h-12 rounded-full bg-[var(--q-accent-8)] text-white"
+  className="h-12 rounded-full bg-[var(--q-accent-8)] text-white font-medium"
 >
 ```
 
-### TypeScript Strict Rules
+---
 
-- No `any` type - ever
-- No `@ts-ignore` - use proper type guards
-- Explicit return types on all functions
-- All API responses typed via `src/types/`
+## Regras Absolutas — TypeScript
 
-### Backend Patterns
+```
+✅ strict mode SEMPRE (tsconfig: "strict": true)
+✅ Sem any — usar unknown + type guards
+✅ Sem @ts-ignore — usar proper type guards
+✅ Return types explícitos em funções públicas
+✅ Todos os API responses tipados via src/types/
+❌ NUNCA console.log em produção — usar logger estruturado (pino/winston)
+```
 
-**Zod Validation**: All routes use Zod schemas via middleware
-**No Prisma in Middleware**: Controllers only
-**Error Handling**: Structured logger (no `console.log` in production)
-**JWT Auth**: Stateless tokens, validated in `auth.middleware.ts`
+---
 
-### API Client
+## Regras Absolutas — React / Next.js
+
+```
+✅ Server Components por padrão (App Router)
+✅ 'use client' apenas onde necessário (interatividade, hooks)
+✅ React Query para TODO server state
+✅ Zustand apenas para client state (auth, UI preferences)
+✅ AnimatePresence em TODAS as trocas de tela
+✅ Suspense boundaries com skeletons específicos (nunca spinner genérico)
+❌ NUNCA useEffect + fetch — usar useQuery
+❌ NUNCA fetch direto em componentes — sempre via hooks em src/hooks/
+```
+
+---
+
+## Regras Absolutas — Backend
+
+```
+✅ Zod validation em 100% dos endpoints (via middleware)
+✅ Try/catch em todos os async handlers
+✅ Erros estruturados: { error: { code, message, details? } }
+✅ Prisma transactions para operações multi-tabela
+✅ Rate limiting via Redis em endpoints sensíveis
+❌ NUNCA queries Prisma em middleware — apenas em controllers/services
+❌ NUNCA expor stack traces em produção
+❌ NUNCA OpenRouter API key no frontend bundle
+```
+
+---
+
+## API Client
 
 ```typescript
-// src/lib/api.ts - Centralized Axios instance with interceptors
+// src/lib/api.ts — Instância Axios centralizada com interceptors
 const api = axios.create({ baseURL: "/api" });
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
+// Interceptor de response: refresh token automático em 401
 ```
 
 ---
 
 ## Environment Setup
 
-Copy and configure both `.env` files:
-
 ```bash
 # backend/.env
 DATABASE_URL="postgresql://quantum:password@localhost:5432/quantum_project"
 REDIS_URL="redis://:redispass@localhost:6379"
 JWT_SECRET="your-jwt-secret-min-32-chars"
+JWT_REFRESH_SECRET="your-refresh-secret"
+JWT_EXPIRES_IN="15m"
+JWT_REFRESH_EXPIRES_IN="7d"
 OPENROUTER_API_KEY="your-openrouter-key"
 VAPID_PUBLIC_KEY="web-push-public"
 VAPID_PRIVATE_KEY="web-push-private"
+VAPID_EMAIL="mailto:admin@quantumproject.app"
+PORT=3001
+NODE_ENV=development
 
 # frontend/.env
 NEXT_PUBLIC_API_URL="http://localhost:3001"
+NEXT_PUBLIC_VAPID_PUBLIC_KEY="web-push-public"
 ```
 
 ---
 
-## Route Groups
+## OpenSquad — Squads Configurados
 
-Frontend uses Next.js route groups for layout organization:
+Este projeto usa [OpenSquad](https://github.com/renatoasse/opensquad) para orquestração de agentes de IA.
 
-- `(auth)/` - Login, register (no navbar)
-- `(protected)/` - All authenticated pages (with Navbar)
-  - `dashboard/`, `session/`, `profile/`, `settings/`, `admin/`
-
-Backend route prefixes:
-
-- `/api/auth/*` - Authentication
-- `/api/session/*` - Daily sessions
-- `/api/progress/*` - User progress/stats
-- `/api/admin/*` - Admin operations (requires ADMIN role)
+```bash
+# Executar em ordem:
+/opensquad run squad-correcoes-criticas    # P1 bugs
+/opensquad run squad-fase-7-retention      # Fase 7
+/opensquad run squad-fase-8-admin          # Fase 8
+/opensquad run squad-fase-9-producao       # Fase 9
+```
 
 ---
 
-## Documentation
+## Diretiva Final
 
-Key docs in `docs/`:
+**awareness → reflection → action → reinforcement → identity shift**
 
-- `BLUEPRINT.md` - Design system, tokens, animations
-- `SDD.md` - API contracts, types, architecture diagrams
-- `PHASES.md` - Roadmap and current status
-- `AGENTS.md` - Agent conventions
-- `QUANTUM_DESIGN_SYSTEM.md` - Complete design reference
-- `docs\PR-COMPLETE-COMPLEMENT-PR00.md`
-- `docs\PR-00.md`
-
-Read these before making architectural changes.
+Este não é um app de conteúdo. É um motor de transformação comportamental adaptativo.
+Cada linha de código serve à missão: mudar quem o usuário é.

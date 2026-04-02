@@ -1,0 +1,16 @@
+# Pipeline: Bugfix Critical 3
+# 4 steps: parallel investigation → checkpoint → synthesis → checkpoint
+
+steps:
+  - file: steps/step-01-parallel-investigation.md
+    name: "Investigação Paralela"
+  - file: steps/step-02-checkpoint-review.md
+    name: "Checkpoint — Revisar Perspectivas"
+  - file: steps/step-03-synthesis.md
+    name: "Síntese & Plano de Ação"
+  - file: steps/step-04-checkpoint-approve.md
+    name: "Checkpoint — Aprovar Plano"
+
+checkpoints:
+  - step-02-checkpoint-review
+  - step-04-checkpoint-approve

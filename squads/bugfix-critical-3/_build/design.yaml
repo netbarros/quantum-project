@@ -1,0 +1,109 @@
+# Design output — bugfix-critical-3
+# Squad de diagnóstico multi-ângulo para 3 bugs críticos no Quantum Project
+
+squad:
+  code: "bugfix-critical-3"
+  name: "Bugfix Critical 3"
+  description: "Diagnóstico multi-ângulo de 3 bugs críticos: score 0 pts, history placeholder, session verification"
+
+agents:
+  - id: "lia-layout"
+    name: "Lia Layout"
+    title: "Especialista UX & Data Flow"
+    icon: "🎨"
+    execution: "subagent"
+    role_summary: "Analisa fluxo de dados frontend: hooks → stores → componentes → render. Identifica onde dados se perdem entre API e tela."
+    skills: []
+
+  - id: "artur-arquitetura"
+    name: "Artur Arquitetura"
+    title: "Arquiteto Técnico"
+    icon: "⚙️"
+    execution: "subagent"
+    role_summary: "Analisa data flow backend→frontend: ProgressAgent → controller → API response → tipos → hook → UI. Verifica contratos."
+    skills: []
+
+  - id: "dante-duvida"
+    name: "Dante Dúvida"
+    title: "Advogado do Diabo"
+    icon: "😈"
+    execution: "subagent"
+    role_summary: "Desafia suposições, busca edge cases, race conditions, estados iniciais inesperados, problemas de timezone/cache."
+    skills: []
+
+  - id: "pietra-premium"
+    name: "Pietra Premium"
+    title: "Especialista Monetização & Freemium"
+    icon: "💎"
+    execution: "subagent"
+    role_summary: "Verifica MonetizationAgent gates, limites de free tier no /history, se score/streak são afetados por tier."
+    skills: []
+
+  - id: "teo-tokens"
+    name: "Teo Tokens"
+    title: "Design Director — System 6"
+    icon: "🎯"
+    execution: "subagent"
+    role_summary: "Design system completo: tokens CSS, tipografia, animações, micro-interações, estados, gamificação UX, engajamento, mobile-first."
+    skills: []
+
+  - id: "eva-extremo"
+    name: "Eva Extremo"
+    title: "Tester E2E"
+    icon: "🧪"
+    execution: "subagent"
+    role_summary: "Testa fluxos completos end-to-end: login→session→complete→score→history. Cobre edge cases e estados limite."
+    skills: []
+
+  - id: "sofia-sintese"
+    name: "Sofia Síntese"
+    title: "Sintetizadora & Revisora"
+    icon: "🔬"
+    execution: "inline"
+    role_summary: "Cruza os 6 relatórios de diagnóstico e produz plano de ação unificado, priorizado por impacto × esforço."
+    skills: []
+
+pipeline:
+  - step: 1
+    name: "parallel-investigation"
+    type: "agent"
+    agents: ["lia-layout", "artur-arquitetura", "dante-duvida", "pietra-premium", "teo-tokens", "eva-extremo"]
+    execution: "subagent"
+    output_file: "squads/bugfix-critical-3/output/investigation-reports.md"
+    model_tier: "powerful"
+
+  - step: 2
+    name: "checkpoint-review-perspectives"
+    type: "checkpoint"
+
+  - step: 3
+    name: "synthesis"
+    type: "agent"
+    agent: "sofia-sintese"
+    execution: "inline"
+    input_file: "squads/bugfix-critical-3/output/investigation-reports.md"
+    output_file: "squads/bugfix-critical-3/output/action-plan.md"
+
+  - step: 4
+    name: "checkpoint-approve-plan"
+    type: "checkpoint"
+
+investigation:
+  enriched: false
+
+research_brief: |
+  Codebase explorado em profundidade. Estado real:
+  - Bug 1: ProgressAgent CONECTADO ao session complete (controller:185-204). Bug provável no frontend.
+  - Bug 2: Backend history endpoint EXISTE (controller:213-248). Frontend é PLACEHOLDER (23 linhas).
+  - Bug 3: session/page.tsx (122 linhas) + SessionBlockReader (188 linhas) COMPLETOS.
+  Documentação: AGENTS.md, BLUEPRINT.md, QUANTUM_DESIGN_SYSTEM.md, PREMIUM_SKILLS.md consultados.
+
+skills_installed:
+  - "code_read"
+  - "code_write"
+  - "grep_search"
+
+formats_selected: []
+
+best_practices_consulted:
+  - "review.md"

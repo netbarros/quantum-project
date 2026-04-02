@@ -1,0 +1,40 @@
+# Squad: Bugfix Critical 3
+# Diagnóstico multi-ângulo de 3 bugs críticos no Quantum Project
+
+squad:
+  code: bugfix-critical-3
+  name: "Bugfix Critical 3"
+  description: "Diagnóstico multi-ângulo de 3 bugs críticos: score 0 pts, history placeholder, session verification"
+  icon: "🔬"
+  version: "1.0"
+  created: "2026-04-02"
+
+agents:
+  - id: lia-layout
+    file: ./agents/lia-layout.agent.md
+  - id: artur-arquitetura
+    file: ./agents/artur-arquitetura.agent.md
+  - id: dante-duvida
+    file: ./agents/dante-duvida.agent.md
+  - id: pietra-premium
+    file: ./agents/pietra-premium.agent.md
+  - id: teo-tokens
+    file: ./agents/teo-tokens.agent.md
+  - id: eva-extremo
+    file: ./agents/eva-extremo.agent.md
+  - id: sofia-sintese
+    file: ./agents/sofia-sintese.agent.md
+
+pipeline:
+  file: ./pipeline/pipeline.yaml
+
+skills:
+  - code_read
+  - code_write
+  - grep_search
+
+data:
+  - pipeline/data/research-brief.md
+  - pipeline/data/quality-criteria.md
+  - pipeline/data/anti-patterns.md
+  - pipeline/data/design-system-spec.md

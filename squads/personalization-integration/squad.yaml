@@ -1,0 +1,28 @@
+# Squad: Personalization Integration
+# Conectar PersonalizationAgent + Admin Broadcast + Recharts Charts
+
+squad:
+  code: personalization-integration
+  name: "Personalization Integration"
+  description: "Wire PersonalizationAgent into ContentAgent pipeline, build Admin Broadcast page, migrate charts to Recharts"
+  icon: "🧬"
+  version: "1.0"
+  created: "2026-04-02"
+
+agents:
+  - id: gabi-gateway
+    file: ./agents/gabi-gateway.agent.md
+  - id: fabio-frontend
+    file: ./agents/fabio-frontend.agent.md
+  - id: rosa-revisao
+    file: ./agents/rosa-revisao.agent.md
+
+pipeline:
+  file: ./pipeline/pipeline.yaml
+
+skills:
+  - code_read
+  - code_write
+
+data:
+  - pipeline/data/research-brief.md

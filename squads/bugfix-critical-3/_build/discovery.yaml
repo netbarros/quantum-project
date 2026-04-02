@@ -1,0 +1,61 @@
+squad_code: "bugfix-critical-3"
+purpose: "Corrigir 3 bugs críticos no Quantum Project: 1) Diagnosticar por que perfil mostra 0 pts (backend ProgressAgent conectado, bug provável no frontend), 2) Implementar frontend da página /history com useSessionHistory hook + cards (backend endpoint existe), 3) Verificar session/page.tsx + SessionBlockReader (já funcional, confirmar)."
+domain: "automation"
+
+company:
+  name: "Quantum Project"
+  tone: "Ritualístico, imersivo, transformacional — UI minimalista e calma"
+  products: "Plataforma SaaS de transformação comportamental com IA (365 dias)"
+
+language: "pt-BR"
+
+context:
+  trigger: "manual"
+  systems: "Express + TypeScript + Prisma + Next.js App Router + Framer Motion + Zustand + React Query"
+  frequency: "once"
+  bugs:
+    - id: "bug-1"
+      title: "Perfil mostra 0 pts"
+      description: "ProgressAgent está conectado ao POST /api/session/:id/complete e calcula score/streak corretamente. Bug provável no frontend — perfil não consome dados de resposta do ProgressAgent."
+      backend_status: "OK — ProgressAgent.ts (194 linhas), session.controller.ts:185-204 despacha session_complete"
+      frontend_suspects:
+        - "frontend/src/app/(protected)/profile/page.tsx"
+        - "frontend/src/hooks/useProgress.ts"
+        - "frontend/src/stores/progressStore.ts"
+    - id: "bug-2"
+      title: "Página /history é placeholder"
+      description: "Backend GET /api/sessions/history existe e retorna sessões completadas. Frontend history/page.tsx (23 linhas) é placeholder. Falta useSessionHistory hook + cards com dados reais."
+      backend_status: "OK — session.controller.ts:213-248"
+      frontend_needs:
+        - "Criar useSessionHistory hook"
+        - "Implementar cards de histórico em history/page.tsx"
+    - id: "bug-3"
+      title: "Verificar session page"
+      description: "session/page.tsx (122 linhas) e SessionBlockReader.tsx (188 linhas) já existem com 8 blocos progressivos. Apenas verificação necessária."
+      status: "IMPLEMENTADO — verificação apenas"
+
+  reference_files:
+    - "docs/AGENTS.md"
+    - "docs/BLUEPRINT.md"
+    - "backend/src/agents/ProgressAgent.ts"
+    - "backend/src/agents/BaseAgent.ts"
+    - "backend/src/agents/AgentRegistry.ts"
+    - "backend/src/controllers/session.controller.ts"
+    - "backend/prisma/schema.prisma"
+    - "frontend/src/hooks/useProgress.ts"
+    - "frontend/src/hooks/useSession.ts"
+    - "frontend/src/app/(protected)/history/page.tsx"
+    - "frontend/src/app/(protected)/session/page.tsx"
+    - "frontend/src/components/session/SessionBlockReader.tsx"
+    - "frontend/src/lib/api.ts"
+    - "frontend/src/lib/animations.ts"
+
+tools_needed:
+  - "code_read"
+  - "code_write"
+  - "grep_search"
+
+investigation:
+  enabled: false
+
+target_formats: []

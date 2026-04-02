@@ -1,0 +1,6 @@
+id,name,title,icon,execution,path
+igor-inteligencia,Igor Inteligência,Engenheiro AI Gateway,🧠,inline,./agents/igor-inteligencia.agent.md
+hugo-hardening,Hugo Hardening,Engenheiro de Segurança & Infra,🛡️,inline,./agents/hugo-hardening.agent.md
+tiago-testes,Tiago Testes,Engenheiro de Testes,🧪,inline,./agents/tiago-testes.agent.md
+paula-pwa,Paula PWA,Especialista PWA,📱,inline,./agents/paula-pwa.agent.md
+vera-verificacao,Vera Verificação,Auditora Final,✅,inline,./agents/vera-verificacao.agent.md

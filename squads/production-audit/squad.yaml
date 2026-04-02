@@ -1,0 +1,30 @@
+squad:
+  code: production-audit
+  name: "Production Audit v2"
+  description: "AI Gateway free chain + Security + Redis + Tests + PWA — hardening completo para produção"
+  icon: "🛡️"
+  version: "2.0"
+  created: "2026-04-02"
+
+agents:
+  - id: igor-inteligencia
+    file: ./agents/igor-inteligencia.agent.md
+  - id: hugo-hardening
+    file: ./agents/hugo-hardening.agent.md
+  - id: tiago-testes
+    file: ./agents/tiago-testes.agent.md
+  - id: paula-pwa
+    file: ./agents/paula-pwa.agent.md
+  - id: vera-verificacao
+    file: ./agents/vera-verificacao.agent.md
+
+pipeline:
+  file: ./pipeline/pipeline.yaml
+
+skills:
+  - code_read
+  - code_write
+
+data:
+  - pipeline/data/research-brief.md
+  - pipeline/data/ai-gateway-spec.md

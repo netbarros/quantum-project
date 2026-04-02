@@ -1,0 +1,4 @@
+id,name,title,icon,execution,path
+gabi-gateway,Gabi Gateway,Engenheira de Integração Backend,🧬,inline,./agents/gabi-gateway.agent.md
+fabio-frontend,Fábio Frontend,Engenheiro Frontend,🖥️,inline,./agents/fabio-frontend.agent.md
+rosa-revisao,Rosa Revisão,Revisora de Código,🔍,inline,./agents/rosa-revisao.agent.md

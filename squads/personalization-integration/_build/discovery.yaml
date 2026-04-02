@@ -1,0 +1,46 @@
+squad_code: "personalization-integration"
+purpose: "Conectar PersonalizationAgent ao ContentAgent pipeline + Admin Broadcast page + Migrar charts para Recharts"
+domain: "automation"
+
+company:
+  name: "Quantum Project"
+  tone: "Ritualístico, imersivo, transformacional"
+  products: "Plataforma SaaS de transformação comportamental com IA"
+
+language: "pt-BR"
+
+context:
+  trigger: "manual"
+  systems: "Express + TypeScript + Prisma + Next.js App Router + Framer Motion + Recharts"
+  frequency: "once"
+  gaps:
+    - id: "gap-1"
+      title: "PersonalizationAgent não injeta no ContentAgent"
+      description: "PersonalizationAgent (225 linhas) analisa patterns e gera ContentAdjustments corretamente, mas session.controller.ts:120 chama ContentAgent sem consultar PersonalizationAgent. ContentInput type não tem campo para adjustments."
+      files:
+        - "backend/src/agents/PersonalizationAgent.ts (225 linhas)"
+        - "backend/src/agents/ContentAgent.ts (25 linhas)"
+        - "backend/src/controllers/session.controller.ts (324 linhas, linha 120)"
+        - "backend/src/services/AIGateway.ts"
+        - "backend/src/types/ai.types.ts (ContentInput sem adjustments)"
+    - id: "gap-2"
+      title: "Admin Broadcast page missing"
+      description: "POST /admin/broadcast rota existe. Página frontend não."
+      files:
+        - "backend/src/routes/admin.routes.ts (POST /admin/broadcast)"
+        - "frontend/src/app/(protected)/admin/ (falta broadcast/page.tsx)"
+    - id: "gap-3"
+      title: "Recharts instalado mas não usado"
+      description: "recharts@^3.8.1 no package.json. Admin pages usam barras manuais com motion.div."
+      files:
+        - "frontend/src/app/(protected)/admin/costs/page.tsx (barras manuais)"
+        - "frontend/src/app/(protected)/admin/page.tsx (streak chart manual)"
+
+tools_needed:
+  - "code_read"
+  - "code_write"
+
+investigation:
+  enabled: false
+
+target_formats: []
