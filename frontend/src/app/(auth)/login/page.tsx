@@ -32,7 +32,7 @@ export default function LoginPage() {
       const userResult = await login({ email, password });
       
       if (userResult.onboardingComplete) {
-        router.push('/session');
+        router.push('/home');
       } else {
         router.push('/onboarding');
       }

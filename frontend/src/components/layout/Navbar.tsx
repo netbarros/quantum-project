@@ -12,6 +12,7 @@ export function Navbar() {
   if (pathname.startsWith('/onboarding')) return null;
 
   const links = [
+    { href: '/home', label: 'Início' },
     { href: '/session', label: 'Hoje' },
     { href: '/history', label: 'Jornada' },
     { href: '/plans', label: 'Planos' },

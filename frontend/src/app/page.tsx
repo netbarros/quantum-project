@@ -12,7 +12,7 @@ export default function Home() {
     if (!isLoading) {
       if (isAuthenticated && user) {
         if (user.onboardingComplete) {
-          router.push('/session');
+          router.push('/home');
         } else {
           router.push('/onboarding');
         }

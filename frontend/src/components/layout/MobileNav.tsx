@@ -10,9 +10,9 @@ export function MobileNav() {
   if (pathname.startsWith('/onboarding')) return null;
 
   const links = [
+    { href: '/home', label: 'Início', icon: '◉' },
     { href: '/session', label: 'Hoje', icon: '✦' },
     { href: '/history', label: 'Jornada', icon: '❂' },
-    { href: '/plans', label: 'Planos', icon: '✧' },
     { href: '/profile', label: 'Perfil', icon: '👤' },
   ];
 

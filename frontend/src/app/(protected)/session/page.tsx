@@ -3,7 +3,10 @@
 import { useSession, type CompletionResult } from '@/hooks/useSession';
 import { SessionBlockReader } from '@/components/session/SessionBlockReader';
 import { CompletionScreen } from '@/components/session/CompletionScreen';
+import { SofiaOrb } from '@/components/session/SofiaOrb';
+import { AmbientParticles } from '@/components/session/AmbientParticles';
 import { PaywallModal } from '@/components/PaywallModal';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -81,20 +84,37 @@ export default function SessionPage() {
   // Se já estava completo antes de abrir
   if (session.isCompleted) {
     return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center gap-6 text-center px-6">
-        <div className="w-16 h-16 rounded-full bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] flex items-center justify-center text-2xl">
-          ✓
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold text-[var(--q-text-primary)] mb-2">Dia {session.day} Concluído</h2>
-          <p className="text-[var(--q-text-secondary)]">Você já realizou a prática de hoje. Volte amanhã para o próximo passo.</p>
-        </div>
-        <button 
-          onClick={() => router.push('/dashboard')} 
-          className="px-8 h-12 bg-[var(--q-accent-8)] rounded-full text-white font-medium hover:scale-95 transition-transform"
-        >
-          Voltar ao Dashboard
-        </button>
+      <div className="min-h-[80vh] flex flex-col items-center justify-center gap-6 text-center px-6 relative overflow-hidden">
+        <AmbientParticles blockType="integration" count={8} />
+        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", stiffness: 200 }}>
+          <SofiaOrb blockType="integration" size="md" level={progress?.level ?? "BEGINNER"} />
+        </motion.div>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+          className="text-[10px] text-[var(--q-text-tertiary)] uppercase tracking-[0.2em]">Sofia</motion.p>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+          <h2 className="text-xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)] mb-2">
+            Dia {session.day} concluído
+          </h2>
+          <p className="text-sm text-[var(--q-text-secondary)] max-w-xs mx-auto">
+            Bom trabalho. Permita-se absorver o que viveu hoje. Amanhã, iremos mais fundo.
+          </p>
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="flex items-center gap-3 mt-2">
+          <span className="text-sm">🔥 {progress?.streak ?? 0}d</span>
+          <span className="text-sm text-[var(--q-accent-9)]">{progress?.consciousnessScore ?? 0} pts</span>
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="flex flex-col gap-3 w-full max-w-xs mt-4">
+          <motion.button whileTap={{ scale: 0.97 }}
+            onClick={() => router.push('/dashboard')}
+            className="h-12 rounded-full bg-[var(--q-accent-8)] text-white font-medium shadow-[var(--q-shadow-glow-accent)]">
+            Ver meu progresso
+          </motion.button>
+          <motion.button whileTap={{ scale: 0.97 }}
+            onClick={() => router.push('/history')}
+            className="h-11 rounded-full bg-white/5 border border-[var(--q-border-default)] text-[var(--q-text-secondary)] text-sm hover:border-[var(--q-border-strong)] transition-colors">
+            Explorar reflexões
+          </motion.button>
+        </motion.div>
       </div>
     );
   }
