@@ -3,6 +3,7 @@ import { AgentMessage } from '../types/agent.types';
 import { prisma } from '../config/database';
 import { pushService } from '../services/PushNotification';
 import type webpush from 'web-push';
+import { logger } from '../lib/logger';
 
 type NotificationType = 'DAILY_REMINDER' | 'MOTIVATIONAL_RESET' | 'RECOVERY_FLOW';
 type Level = 'BEGINNER' | 'AWARE' | 'CONSISTENT' | 'ALIGNED' | 'INTEGRATED';
@@ -114,7 +115,7 @@ export class NotificationAgent extends BaseAgent {
       userId
     );
 
-    console.log(`[NotificationAgent] Sent ${type} to userId=${userId} (${level})`);
+    logger.info({ type, userId, level }, 'NotificationAgent sent push notification');
   }
 
   private getNotificationCopy(

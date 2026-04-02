@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+import { logger } from '../lib/logger';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://:redispass@localhost:6379';
 
@@ -10,7 +11,7 @@ function createRedisClient(): Redis {
     maxRetriesPerRequest: 3,
     retryStrategy(times: number): number | null {
       if (times > 5) {
-        console.error('[Redis] Max reconnection attempts reached. Giving up.');
+        logger.error('Redis max reconnection attempts reached, giving up');
         return null;
       }
       return Math.min(times * 200, 2000);
@@ -21,12 +22,12 @@ function createRedisClient(): Redis {
 
   client.on('connect', () => {
     isConnected = true;
-    console.info('[Redis] Connected');
+    logger.info('Redis connected');
   });
 
   client.on('error', (err: Error) => {
     isConnected = false;
-    console.error('[Redis] Connection error:', err.message);
+    logger.error({ err: err.message }, 'Redis connection error');
   });
 
   client.on('close', () => {
@@ -41,10 +42,10 @@ export function getRedis(): Redis | null {
     try {
       redis = createRedisClient();
       redis.connect().catch((err: Error) => {
-        console.warn('[Redis] Initial connection failed, will retry:', err.message);
+        logger.warn({ err: err.message }, 'Redis initial connection failed, will retry');
       });
     } catch (err) {
-      console.warn('[Redis] Failed to create client:', err);
+      logger.warn({ err }, 'Redis failed to create client');
       return null;
     }
   }

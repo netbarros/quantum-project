@@ -1,5 +1,6 @@
 import webpush from 'web-push';
 import { prisma } from '../config/database';
+import { logger } from '../lib/logger';
 
 interface PushPayload {
   title: string;
@@ -52,13 +53,13 @@ export class PushNotificationService {
           await webpush.sendNotification(subscription, notificationPayload);
         } catch (retryError) {
           // Best-effort: log but do not throw
-          console.error('[PushNotification] Retry failed after 429:', retryError);
+          logger.error({ err: retryError }, 'PushNotification retry failed after 429');
         }
         return;
       }
 
       // General error — log but never throw
-      console.error('[PushNotification] Send failed:', error);
+      logger.error({ err: error }, 'PushNotification send failed');
     }
   }
 
@@ -69,9 +70,9 @@ export class PushNotificationService {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: { pushSubscription: null as any },
       });
-      console.log(`[PushNotification] Cleared expired subscription for userId=${userId}`);
+      logger.info({ userId }, 'Cleared expired push subscription');
     } catch (err) {
-      console.error('[PushNotification] Failed to clear subscription:', err);
+      logger.error({ err }, 'Failed to clear expired push subscription');
     }
   }
 

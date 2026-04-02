@@ -22,6 +22,7 @@ import { MonetizationAgent } from './agents/MonetizationAgent';
 import { NotificationAgent } from './agents/NotificationAgent';
 import { PersonalizationAgent } from './agents/PersonalizationAgent';
 import { ContentAgent } from './agents/ContentAgent';
+import { errorHandler } from './middleware/errorHandler';
 
 // ── Register all agents ────────────────────────────────────────────────────────
 const registry = AgentRegistry.getInstance();
@@ -89,5 +90,8 @@ app.use('/api', analyticsRoutes);
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// ── Global error handler (MUST be last middleware) ────────────────────────────
+app.use(errorHandler);
 
 export default app;

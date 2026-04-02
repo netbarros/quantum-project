@@ -10,6 +10,7 @@ import {
   FREE_TIER_FAVORITES_MAX,
 } from '../middleware/rateLimiterGate';
 import { minHistoryDayForFreeTier } from '../utils/historyWindow';
+import { logger } from '../lib/logger';
 
 export const sessionController = {
   async getDailySession(req: AuthRequest, res: Response): Promise<void> {
@@ -112,7 +113,7 @@ export const sessionController = {
           const pResult = await AgentRegistry.getInstance().dispatch(personalizationMsg);
           adjustments = pResult.payload?.adjustments as Record<string, unknown> | undefined;
         } catch (err) {
-          console.warn(`[SessionController] PersonalizationAgent failed (correlationId: ${correlationId}), continuing without adjustments`, err);
+          logger.warn({ err, correlationId }, 'PersonalizationAgent failed, continuing without adjustments');
         }
 
         const msg: AgentMessage = {
@@ -179,7 +180,7 @@ export const sessionController = {
         ...(aiLimitWarning ? { aiLimitWarning: true as const } : {}),
       });
     } catch (error) {
-      console.error('[SessionController] error getting daily session:', error);
+      logger.error({ err: error }, 'SessionController error getting daily session');
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -224,7 +225,7 @@ export const sessionController = {
 
       res.status(200).json({ newProgress: result.payload });
     } catch (error) {
-      console.error('[SessionController] error completing session:', error);
+      logger.error({ err: error }, 'SessionController error completing session');
       res.status(500).json({ error: 'Internal server error' });
     }
   },

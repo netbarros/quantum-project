@@ -1,5 +1,6 @@
 import { prisma } from '../config/database';
 import { AI_CONFIG } from '../config/ai.config';
+import { logger } from '../lib/logger';
 
 export class TokenTracker {
   static async logUsage({
@@ -39,7 +40,7 @@ export class TokenTracker {
         },
       });
     } catch (err) {
-      console.error('[TokenTracker] Failed to log AI usage', err);
+      logger.error({ err }, 'TokenTracker failed to log AI usage');
     }
   }
 }

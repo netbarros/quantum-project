@@ -2,6 +2,7 @@ import { ContentInput, AIResponse, ContentOutput } from '../types/ai.types';
 import { AI_CONFIG, MODEL_CHAIN, type ModelConfig } from '../config/ai.config';
 import { TokenTracker } from './TokenTracker';
 import { getStaticFallback } from '../utils/staticContent';
+import { logger } from '../lib/logger';
 
 // ── Health Tracker ──────────────────────────────────────────────
 interface ModelHealth {
@@ -30,7 +31,7 @@ function recordFailure(modelId: string, isRateLimit: boolean): void {
   health.lastFailure = Date.now();
   if (health.failures >= MAX_FAILURES || isRateLimit) {
     health.skipUntil = Date.now() + SKIP_DURATION_MS;
-    console.warn(`[AIGateway] Model ${modelId} skipped for 10min (failures: ${health.failures}, rateLimit: ${isRateLimit})`);
+    logger.warn({ modelId, failures: health.failures, isRateLimit }, 'Model skipped for 10min');
   }
   modelHealth.set(modelId, health);
 }
@@ -44,7 +45,7 @@ export class AIGateway {
   static async generateContent(input: ContentInput): Promise<AIResponse> {
     for (const model of MODEL_CHAIN) {
       if (!isModelHealthy(model.id)) {
-        console.info(`[AIGateway] Skipping unhealthy model: ${model.label}`);
+        logger.info({ model: model.label }, 'Skipping unhealthy model');
         continue;
       }
 
@@ -53,7 +54,7 @@ export class AIGateway {
           const result = await AIGateway.callModel(model, input);
           if (result) {
             recordSuccess(model.id);
-            console.info(`[AIGateway] Success via ${model.label} (attempt ${attempt + 1})`);
+            logger.info({ model: model.label, attempt: attempt + 1 }, 'AI generation success');
             return { ...result, modelUsed: model.label };
           }
         } catch (err: unknown) {
@@ -62,18 +63,18 @@ export class AIGateway {
 
           if (status === 429) {
             recordFailure(model.id, true);
-            console.warn(`[AIGateway] Rate limit (429) on ${model.label}, skipping to next model`);
+            logger.warn({ model: model.label, status: 429 }, 'Rate limit hit, skipping to next model');
             break; // skip retries, go to next model
           }
 
           if (status === 502 || status === 503) {
             recordFailure(model.id, false);
-            console.warn(`[AIGateway] Model unavailable (${status}) on ${model.label}, trying next`);
+            logger.warn({ model: model.label, status }, 'Model unavailable, trying next');
             break;
           }
 
           // Other error — retry if attempts remain
-          console.warn(`[AIGateway] Attempt ${attempt + 1}/${model.maxRetries + 1} failed for ${model.label}: ${message}`);
+          logger.warn({ model: model.label, attempt: attempt + 1, maxAttempts: model.maxRetries + 1, error: message }, 'Attempt failed');
           if (attempt < model.maxRetries) {
             await new Promise((resolve) => setTimeout(resolve, AI_CONFIG.retryDelayMs));
           } else {
@@ -84,7 +85,7 @@ export class AIGateway {
     }
 
     // All models exhausted — static fallback
-    console.warn('[AIGateway] All models failed — using static content');
+    logger.warn('All models failed, using static content');
     return {
       content: getStaticFallback(input.day),
       isFallback: true,
@@ -136,7 +137,7 @@ export class AIGateway {
           promptTokens: data.usage.prompt_tokens,
           completionTokens: data.usage.completion_tokens,
           responseTimeMs: duration,
-        }).catch((e) => console.error('[AIGateway] TokenTracker error:', e));
+        }).catch((e) => logger.error({ err: e }, 'TokenTracker error'));
       }
 
       const contentRaw = data.choices?.[0]?.message?.content;

@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import { prisma } from '../config/database';
 import { AgentRegistry } from '../agents/AgentRegistry';
 import { Level } from '@prisma/client';
+import { logger } from '../lib/logger';
 
 /**
  * Inactivity Checker — runs every hour.
@@ -14,7 +15,7 @@ import { Level } from '@prisma/client';
  */
 export function startInactivityChecker(): void {
   cron.schedule('0 * * * *', async () => {
-    console.log('[InactivityChecker] Running inactivity check...');
+    logger.info('Running inactivity check');
     let processed = 0;
     let sent = 0;
     let errors = 0;
@@ -95,17 +96,15 @@ export function startInactivityChecker(): void {
           sent++;
         } catch (err) {
           errors++;
-          console.error(`[InactivityChecker] Error processing userId=${user.id}:`, err);
+          logger.error({ err, userId: user.id }, 'InactivityChecker error processing user');
         }
       }
 
-      console.log(
-        `[InactivityChecker] Done: processed=${processed}, sent=${sent}, errors=${errors}`
-      );
+      logger.info({ processed, sent, errors }, 'InactivityChecker completed');
     } catch (err) {
-      console.error('[InactivityChecker] Critical error:', err);
+      logger.error({ err }, 'InactivityChecker critical error');
     }
   });
 
-  console.log('[InactivityChecker] Cron job scheduled (every hour)');
+  logger.info('InactivityChecker cron job scheduled (every hour)');
 }
