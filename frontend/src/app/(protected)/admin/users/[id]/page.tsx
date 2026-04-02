@@ -72,7 +72,7 @@ export default function AdminUserDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] p-6">
+    <div className="min-h-screen bg-[var(--q-bg-void)] px-4 py-6 md:px-6"><div className="max-w-4xl mx-auto">
       {/* Back link */}
       <motion.div variants={VARIANTS.pageEnter} initial="initial" animate="animate" className="mb-6">
         <motion.button
@@ -136,7 +136,7 @@ export default function AdminUserDetailPage() {
           </motion.div>
 
           {/* Stats row */}
-          <motion.div variants={VARIANTS.cardReveal} transition={TRANSITIONS.spring} className="grid grid-cols-4 gap-3">
+          <motion.div variants={VARIANTS.cardReveal} transition={TRANSITIONS.spring} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { label: "Score", value: user.consciousnessScore, color: "var(--q-accent-9)" },
               { label: "Streak", value: `${user.streak}d`, color: "var(--q-amber-9)" },
@@ -259,6 +259,6 @@ export default function AdminUserDetailPage() {
           </motion.div>
         </motion.div>
       ) : null}
-    </div>
+    </div></div>
   );
 }

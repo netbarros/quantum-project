@@ -44,7 +44,7 @@ export default function AdminAnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] p-6">
+    <div className="min-h-screen bg-[var(--q-bg-void)] px-4 py-6 md:px-6"><div className="max-w-4xl mx-auto">
       {/* Header */}
       <motion.div variants={VARIANTS.pageEnter} initial="initial" animate="animate" className="mb-6">
         <a
@@ -136,7 +136,7 @@ export default function AdminAnalyticsPage() {
             className="bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] rounded-[var(--q-radius-lg)] p-5"
           >
             <h2 className="text-sm font-medium text-[var(--q-text-primary)] mb-4">Conversão Free → Premium</h2>
-            <div className="flex items-center gap-8">
+            <div className="flex flex-col items-center gap-4 lg:flex-row lg:gap-8">
               <ResponsiveContainer width={140} height={140}>
                 <PieChart>
                   <Pie
@@ -190,6 +190,6 @@ export default function AdminAnalyticsPage() {
           </motion.div>
         </div>
       ) : null}
-    </div>
+    </div></div>
   );
 }

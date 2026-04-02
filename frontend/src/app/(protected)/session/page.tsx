@@ -111,6 +111,8 @@ export default function SessionPage() {
           contentId={session.id}
           content={session.content}
           onComplete={handleComplete}
+          isStatic={session.isStatic}
+          progress={progress}
         />
       </div>
     </div>

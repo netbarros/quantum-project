@@ -26,7 +26,7 @@ export default function AdminCostsPage() {
   const { data, isLoading, error } = useCosts();
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] p-6">
+    <div className="min-h-screen bg-[var(--q-bg-void)] px-4 py-6 md:px-6"><div className="max-w-4xl mx-auto">
       <motion.div variants={VARIANTS.pageEnter} initial="initial" animate="animate" className="mb-6">
         <a
           href="/admin"
@@ -54,7 +54,7 @@ export default function AdminCostsPage() {
       ) : data ? (
         <div className="space-y-6">
           {/* Summary cards */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-[var(--q-bg-surface)] border border-[var(--q-accent-8)] rounded-[var(--q-radius-lg)] p-5">
               <p className="text-[var(--q-text-secondary)] text-xs uppercase tracking-wider mb-2">Custo Total</p>
               <p className="text-[var(--q-accent-9)] text-3xl font-bold tabular-nums">${data.totalCost}</p>
@@ -150,6 +150,6 @@ export default function AdminCostsPage() {
           </div>
         </div>
       ) : null}
-    </div>
+    </div></div>
   );
 }

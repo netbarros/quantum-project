@@ -51,7 +51,7 @@ export default function AdminUsersPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] p-6">
+    <div className="min-h-screen bg-[var(--q-bg-void)] px-4 py-6 md:px-6"><div className="max-w-4xl mx-auto">
       {/* Header */}
       <motion.div variants={VARIANTS.pageEnter} initial="initial" animate="animate" className="mb-6">
         <a
@@ -133,6 +133,6 @@ export default function AdminUsersPage() {
           )}
         </>
       ) : null}
-    </div>
+    </div></div>
   );
 }

@@ -10,6 +10,20 @@ vi.mock('./TokenTracker', () => ({
   },
 }));
 
+vi.mock('./ConfigCache', () => ({
+  ConfigCache: {
+    getInstance: () => ({
+      getAiConfig: vi.fn().mockResolvedValue({
+        apiKey: 'sk-or-test-key',
+        temperature: 0.7,
+        maxTokens: 1200,
+        allowPaid: false,
+        enabledModels: [],
+      }),
+    }),
+  },
+}));
+
 vi.mock('../utils/staticContent', () => ({
   getStaticFallback: vi.fn().mockReturnValue({
     direction: 'Static fallback direction',

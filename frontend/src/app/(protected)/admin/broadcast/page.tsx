@@ -72,7 +72,7 @@ export default function BroadcastPage(): React.ReactElement {
       variants={VARIANTS.pageEnter}
       initial="initial"
       animate="animate"
-      className="min-h-screen bg-[var(--q-bg-void)] p-6 max-w-xl mx-auto"
+      className="min-h-screen bg-[var(--q-bg-void)] px-4 py-6 md:px-6 max-w-xl mx-auto"
     >
       <a
         href="/admin"

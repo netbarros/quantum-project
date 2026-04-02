@@ -39,7 +39,8 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] p-6">
+    <div className="min-h-screen bg-[var(--q-bg-void)] px-4 py-6 md:px-6">
+      <div className="max-w-4xl mx-auto">
       {/* Header */}
       <motion.div
         variants={VARIANTS.pageEnter}
@@ -167,6 +168,7 @@ export default function AdminPage() {
               { label: "Usuários", href: "/admin/users", icon: "👥" },
               { label: "Analytics", href: "/admin/analytics", icon: "📊" },
               { label: "Custos AI", href: "/admin/costs", icon: "💰" },
+              { label: "Config IA", href: "/admin/ai-config", icon: "🧠" },
               { label: "Broadcast", href: "/admin/broadcast", icon: "📢" },
             ].map(({ label, href, icon }) => (
               <motion.a
@@ -183,6 +185,7 @@ export default function AdminPage() {
           </motion.div>
         </>
       ) : null}
+      </div>
     </div>
   );
 }

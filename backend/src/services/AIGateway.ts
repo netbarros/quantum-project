@@ -1,8 +1,9 @@
 import { ContentInput, AIResponse, ContentOutput } from '../types/ai.types';
-import { AI_CONFIG, MODEL_CHAIN, type ModelConfig } from '../config/ai.config';
+import { AI_CONFIG, getModelChain, MODEL_CHAIN, type ModelConfig } from '../config/ai.config';
 import { TokenTracker } from './TokenTracker';
 import { getStaticFallback } from '../utils/staticContent';
 import { logger } from '../lib/logger';
+import { ConfigCache, type AiConfigValues } from './ConfigCache';
 
 // ── Health Tracker ──────────────────────────────────────────────
 interface ModelHealth {
@@ -40,10 +41,52 @@ function recordSuccess(modelId: string): void {
   modelHealth.delete(modelId);
 }
 
+// ── Health Reset (called before admin test to clear stale failures) ──
+export function resetModelHealth(): void {
+  modelHealth.clear();
+}
+
+// ── Health Status Export ────────────────────────────────────────
+export function getModelHealthStatus(): Array<{
+  modelId: string;
+  label: string;
+  healthy: boolean;
+  failures: number;
+  skipUntil: number | null;
+}> {
+  // Include all possible models (free + paid)
+  const allModels = getModelChain(true);
+  return allModels.map((model) => {
+    const health = modelHealth.get(model.id);
+    return {
+      modelId: model.id,
+      label: model.label,
+      healthy: isModelHealthy(model.id),
+      failures: health?.failures ?? 0,
+      skipUntil: health?.skipUntil ?? null,
+    };
+  });
+}
+
 // ── Main Gateway ────────────────────────────────────────────────
 export class AIGateway {
   static async generateContent(input: ContentInput): Promise<AIResponse> {
-    for (const model of MODEL_CHAIN) {
+    // Read dynamic config from DB cache (falls back to env/defaults)
+    let aiConfig: AiConfigValues;
+    try {
+      aiConfig = await ConfigCache.getInstance().getAiConfig();
+    } catch {
+      aiConfig = { apiKey: process.env.OPENROUTER_API_KEY?.trim() || '', temperature: 0.7, maxTokens: 1200, allowPaid: false, enabledModels: [], elevenlabsKey: '', elevenlabsVoiceId: '' };
+    }
+
+    let chain = aiConfig.allowPaid ? getModelChain(true) : MODEL_CHAIN;
+    // Filter by admin-enabled models if configured
+    if (aiConfig.enabledModels.length > 0) {
+      chain = chain.filter((m) => aiConfig.enabledModels.includes(m.id));
+      if (chain.length === 0) chain = MODEL_CHAIN; // fallback if all disabled
+    }
+
+    for (const model of chain) {
       if (!isModelHealthy(model.id)) {
         logger.info({ model: model.label }, 'Skipping unhealthy model');
         continue;
@@ -51,7 +94,7 @@ export class AIGateway {
 
       for (let attempt = 0; attempt <= model.maxRetries; attempt++) {
         try {
-          const result = await AIGateway.callModel(model, input);
+          const result = await AIGateway.callModel(model, input, aiConfig);
           if (result) {
             recordSuccess(model.id);
             logger.info({ model: model.label, attempt: attempt + 1 }, 'AI generation success');
@@ -64,7 +107,7 @@ export class AIGateway {
           if (status === 429) {
             recordFailure(model.id, true);
             logger.warn({ model: model.label, status: 429 }, 'Rate limit hit, skipping to next model');
-            break; // skip retries, go to next model
+            break;
           }
 
           if (status === 502 || status === 503) {
@@ -73,7 +116,6 @@ export class AIGateway {
             break;
           }
 
-          // Other error — retry if attempts remain
           logger.warn({ model: model.label, attempt: attempt + 1, maxAttempts: model.maxRetries + 1, error: message }, 'Attempt failed');
           if (attempt < model.maxRetries) {
             await new Promise((resolve) => setTimeout(resolve, AI_CONFIG.retryDelayMs));
@@ -93,7 +135,7 @@ export class AIGateway {
     };
   }
 
-  private static async callModel(model: ModelConfig, input: ContentInput): Promise<AIResponse | null> {
+  private static async callModel(model: ModelConfig, input: ContentInput, aiConfig: AiConfigValues): Promise<AIResponse | null> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), model.timeoutMs);
 
@@ -102,7 +144,7 @@ export class AIGateway {
       const response = await fetch(`${AI_CONFIG.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${aiConfig.apiKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': process.env.APP_URL || 'http://localhost:3000',
           'X-Title': 'Quantum Project',
@@ -113,8 +155,8 @@ export class AIGateway {
             { role: 'system', content: AIGateway.getSystemPrompt() },
             { role: 'user', content: AIGateway.buildUserPrompt(input) },
           ],
-          temperature: AI_CONFIG.temperature,
-          max_tokens: AI_CONFIG.maxTokens,
+          temperature: aiConfig.temperature,
+          max_tokens: aiConfig.maxTokens,
           response_format: { type: 'json_object' },
         }),
         signal: controller.signal,
@@ -129,7 +171,6 @@ export class AIGateway {
       const data = await response.json();
       const duration = Date.now() - start;
 
-      // Track token usage asynchronously
       if (data.usage) {
         TokenTracker.logUsage({
           userId: input.userId,
@@ -154,27 +195,30 @@ export class AIGateway {
   }
 
   private static getSystemPrompt(): string {
-    return `You are the Quantum Project AI — a consciousness transformation engine.
+    return `You are Sofia — the AI consciousness guide of the Quantum Project.
+You speak with warmth, wisdom, and gentle directness. You combine psychology, spirituality, and behavioral science.
+Your tone is calm, grounded, and human — never robotic or mystically exaggerated.
+You adapt depth based on the user's consciousness level and journey day.
 
-Generate a daily transformation session.
+Generate a daily transformation session as Sofia.
 
 Rules:
-- Human, calm, grounded tone
-- No mystical exaggeration
-- Combine spirituality, psychology, behavior
-- Practical and applicable
-- Adaptive depth based on consciousness score
+- Write as Sofia speaking directly to the user (use "você")
+- Warm but not saccharine — genuine and grounded
+- Combine spirituality, psychology, behavior science
+- Practical and applicable to everyday life
+- Adaptive depth based on consciousness score and user context
 
 Structure (return JSON only):
 {
-  "direction": "Opening guidance for the day",
+  "direction": "Sofia's opening guidance for the day — personal and warm",
   "explanation": "Theoretical context blending psychology + spirituality",
-  "reflection": "Deep reflective question",
-  "action": "One concrete action step",
+  "reflection": "Deep reflective question that invites honest self-inquiry",
+  "action": "One concrete, doable action step",
   "question": "Consciousness-expanding question",
-  "affirmation": "Daily affirmation aligned with user's journey",
+  "affirmation": "Daily affirmation aligned with user's journey stage",
   "practice": "Specific exercise or meditation (adapted to timeAvailable)",
-  "integration": "How to carry this through the rest of the day"
+  "integration": "How to carry today's insight through the rest of the day"
 }
 
 Return JSON only. No markdown. No extra text.`;

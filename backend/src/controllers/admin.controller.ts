@@ -323,3 +323,132 @@ export async function getInsights(
     next(err);
   }
 }
+
+// ── AI Config Endpoints ─────────────────────────────────────────
+
+import { ConfigCache } from '../services/ConfigCache';
+import { getModelHealthStatus, resetModelHealth, AIGateway } from '../services/AIGateway';
+
+// GET /api/admin/ai-config
+export async function getAiConfig(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const aiConfig = await ConfigCache.getInstance().getAiConfig();
+    const hasKey = aiConfig.apiKey.length > 0;
+    const maskedKey = hasKey ? '••••' + aiConfig.apiKey.slice(-4) : '';
+
+    const hasElKey = aiConfig.elevenlabsKey.length > 0;
+
+    res.json({
+      hasApiKey: hasKey,
+      apiKeyPreview: maskedKey,
+      temperature: aiConfig.temperature,
+      maxTokens: aiConfig.maxTokens,
+      allowPaid: aiConfig.allowPaid,
+      enabledModels: aiConfig.enabledModels,
+      modelHealth: getModelHealthStatus(),
+      hasElevenlabsKey: hasElKey,
+      elevenlabsKeyPreview: hasElKey ? '••••' + aiConfig.elevenlabsKey.slice(-4) : '',
+      elevenlabsVoiceId: aiConfig.elevenlabsVoiceId,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PUT /api/admin/ai-config
+const AiConfigSchema = z.object({
+  apiKey: z.string().regex(/^sk-or-/).optional().or(z.literal('')),
+  temperature: z.number().min(0.1).max(1.0).optional(),
+  maxTokens: z.number().int().min(500).max(2000).optional(),
+  allowPaid: z.boolean().optional(),
+  enabledModels: z.array(z.string()).optional(),
+  elevenlabsKey: z.string().optional(),
+  elevenlabsVoiceId: z.string().optional(),
+});
+
+export async function updateAiConfig(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const parsed = AiConfigSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: parsed.error.message } });
+      return;
+    }
+
+    const adminId = (req as AuthRequest).userId!;
+    const cache = ConfigCache.getInstance();
+
+    if (parsed.data.apiKey !== undefined) {
+      await cache.set('OPENROUTER_API_KEY', parsed.data.apiKey, true, adminId);
+      resetModelHealth(); // Clear stale failures from previous key
+    }
+    if (parsed.data.temperature !== undefined) {
+      await cache.set('AI_TEMPERATURE', String(parsed.data.temperature), false, adminId);
+    }
+    if (parsed.data.maxTokens !== undefined) {
+      await cache.set('AI_MAX_TOKENS', String(parsed.data.maxTokens), false, adminId);
+    }
+    if (parsed.data.allowPaid !== undefined) {
+      await cache.set('AI_ALLOW_PAID', String(parsed.data.allowPaid), false, adminId);
+    }
+    if (parsed.data.enabledModels !== undefined) {
+      await cache.set('AI_ENABLED_MODELS', JSON.stringify(parsed.data.enabledModels), false, adminId);
+    }
+    if (parsed.data.elevenlabsKey !== undefined) {
+      await cache.set('ELEVENLABS_API_KEY', parsed.data.elevenlabsKey, true, adminId);
+    }
+    if (parsed.data.elevenlabsVoiceId !== undefined) {
+      await cache.set('ELEVENLABS_VOICE_ID', parsed.data.elevenlabsVoiceId, false, adminId);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/admin/ai-config/test
+export async function testAiGeneration(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    // Reset model health + cache to ensure fresh test with current key
+    resetModelHealth();
+    ConfigCache.getInstance().invalidate();
+
+    const start = Date.now();
+    const testInput = {
+      userId: (req as AuthRequest).userId!,
+      day: 1,
+      language: 'pt-BR',
+      painPoint: 'anxiety',
+      goal: 'inner_peace',
+      emotionalState: 'neutral',
+      consciousnessScore: 10,
+      streak: 1,
+      timeAvailable: 10,
+    };
+
+    const result = await AIGateway.generateContent(testInput);
+    const duration = Date.now() - start;
+
+    res.json({
+      success: !result.isFallback,
+      modelUsed: result.modelUsed,
+      isFallback: result.isFallback ?? false,
+      responseTimeMs: duration,
+      contentPreview: result.content?.direction?.substring(0, 200) ?? '',
+    });
+  } catch (err) {
+    next(err);
+  }
+}

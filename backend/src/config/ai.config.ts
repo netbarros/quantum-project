@@ -39,10 +39,11 @@ const PAID_FALLBACK: ModelConfig = {
   timeoutMs: 30000,
 };
 
-export const MODEL_CHAIN: ModelConfig[] = [
-  ...BASE_CHAIN,
-  ...(process.env.OPENROUTER_ALLOW_PAID === 'true' ? [PAID_FALLBACK] : []),
-];
+export function getModelChain(allowPaid: boolean): ModelConfig[] {
+  return [...BASE_CHAIN, ...(allowPaid ? [PAID_FALLBACK] : [])];
+}
+
+export const MODEL_CHAIN: ModelConfig[] = getModelChain(process.env.OPENROUTER_ALLOW_PAID === 'true');
 
 export const AI_CONFIG = {
   temperature: 0.7,

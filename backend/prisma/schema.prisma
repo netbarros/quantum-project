@@ -172,3 +172,11 @@ model UserEvent {
   @@index([userId, createdAt])
   @@index([eventType])
 }
+
+model SystemConfig {
+  key       String   @id
+  value     String   @db.Text
+  encrypted Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}

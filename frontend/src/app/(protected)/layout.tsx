@@ -9,9 +9,9 @@ export default function ProtectedLayout({
 }) {
   return (
     <ProtectedRoute>
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div className="min-h-screen flex flex-col bg-[var(--q-bg-void)]">
         <Navbar />
-        <main style={{ flex: 1, paddingBottom: '70px' }}>
+        <main className="flex-1 pb-[72px] md:pb-0">
           {children}
         </main>
         <MobileNav />

@@ -8,6 +8,9 @@ import {
   updateRole,
   getAnalytics,
   getCosts,
+  getAiConfig,
+  updateAiConfig,
+  testAiGeneration,
 } from '../controllers/admin.controller';
 import { sendNotification } from '../controllers/notification.controller';
 
@@ -23,5 +26,8 @@ router.put('/admin/users/:id/role', updateRole);
 router.get('/admin/analytics', getAnalytics);
 router.get('/admin/costs', getCosts);
 router.post('/admin/broadcast', sendNotification);
+router.get('/admin/ai-config', getAiConfig);
+router.put('/admin/ai-config', updateAiConfig);
+router.post('/admin/ai-config/test', testAiGeneration);
 
 export default router;

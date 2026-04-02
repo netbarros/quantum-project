@@ -335,6 +335,7 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY="web-push-public"
 ### Admin
 
 - **Email**: net.barros@gmail.com
+- **Senha**: Admin@2026
 - **Role**: ADMIN + PREMIUM
 - **Promoção**: `cd backend && npx tsx src/scripts/grantAdmin.ts net.barros@gmail.com`
 - **Nota**: Após promoção, re-login para atualizar JWT com role ADMIN

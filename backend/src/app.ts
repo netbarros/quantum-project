@@ -15,6 +15,7 @@ import settingsRoutes from './routes/settings.routes';
 import journalRoutes from './routes/journal.routes';
 import adminRoutes from './routes/admin.routes';
 import analyticsRoutes from './routes/analytics.routes';
+import ttsRoutes from './routes/tts.routes';
 
 import { AgentRegistry } from './agents/AgentRegistry';
 import { ProgressAgent } from './agents/ProgressAgent';
@@ -86,6 +87,7 @@ app.use('/api', settingsRoutes);
 app.use('/api', journalRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', analyticsRoutes);
+app.use('/api', ttsRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

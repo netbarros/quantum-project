@@ -39,12 +39,19 @@ services:
       DATABASE_URL: postgresql://quantum:${DB_PASSWORD:-password}@postgres:5432/quantum_project
       REDIS_URL: redis://:${REDIS_PASSWORD:-redispass}@redis:6379
       PORT: ${BACKEND_PORT:-3001}
+      NODE_ENV: development
       APP_URL: http://localhost:${FRONTEND_PORT:-3000}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:${BACKEND_PORT:-3001}/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   frontend:
     build: ./frontend
@@ -53,9 +60,11 @@ services:
     env_file: ./frontend/.env
     environment:
       PORT: ${FRONTEND_PORT:-3000}
+      NEXT_PUBLIC_API_URL: /api
       BACKEND_INTERNAL_URL: http://backend:${BACKEND_PORT:-3001}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   pgdata:
