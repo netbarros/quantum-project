@@ -1,0 +1,34 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e5]:
+      - generic [ref=e6]:
+        - link "Quantum" [ref=e7] [cursor=pointer]:
+          - /url: /session
+        - generic [ref=e8]:
+          - link "Hoje" [ref=e9] [cursor=pointer]:
+            - /url: /session
+            - text: Hoje
+          - link "Jornada" [ref=e11] [cursor=pointer]:
+            - /url: /history
+          - link "Planos" [ref=e12] [cursor=pointer]:
+            - /url: /plans
+          - link "Perfil" [ref=e13] [cursor=pointer]:
+            - /url: /profile
+          - link "Admin" [ref=e14] [cursor=pointer]:
+            - /url: /admin
+          - button "Sair" [ref=e15]
+    - main [ref=e16]:
+      - generic [ref=e19]:
+        - generic:
+          - generic:
+            - img
+        - generic [ref=e100]:
+          - generic [ref=e102] [cursor=pointer]:
+            - img [ref=e103]
+            - img [ref=e111]
+          - paragraph [ref=e113]: Sofia · Afirmação
+          - paragraph [ref=e114]: "\"Eu confio no processo. Eu estou seguro aqui e agora.\""
+          - button "Ouvir Sofia" [ref=e116]:
+            - img [ref=e117]
+          - button "Absorver" [ref=e119]
+  - alert [ref=e4]

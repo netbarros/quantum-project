@@ -9,16 +9,7 @@ import { NotificationTimeSelector } from "@/components/settings/NotificationTime
 import { VARIANTS, TRANSITIONS, stagger } from "@/lib/animations";
 import { useRouter } from "next/navigation";
 
-interface AuthContextValue {
-  logout: () => void;
-}
-
-// For logout — read from context
-function useAuth(): AuthContextValue {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { useAuth: _useAuth } = require("@/contexts/AuthContext") as { useAuth: () => AuthContextValue };
-  return _useAuth();
-}
+import { useAuth } from "@/hooks/useAuth";
 
 const SECTION_LABEL = "text-[var(--q-text-tertiary)] text-xs uppercase tracking-[0.15em] mb-3 font-medium";
 const CARD = "bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] rounded-[var(--q-radius-lg)] p-4";

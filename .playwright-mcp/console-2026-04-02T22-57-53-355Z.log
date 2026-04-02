@@ -1,0 +1,12 @@
+[      80ms] TypeError: t is not a function
+    at http://localhost:3000/_next/static/chunks/0jnkdo3pqkwc2.js:1:20391
+    at http://localhost:3000/_next/static/chunks/0jnkdo3pqkwc2.js:1:20395
+    at ay (http://localhost:3000/_next/static/chunks/16g.ca89g7fib.js:1:63845)
+    at oJ (http://localhost:3000/_next/static/chunks/16g.ca89g7fib.js:1:84102)
+    at iu (http://localhost:3000/_next/static/chunks/16g.ca89g7fib.js:1:95704)
+    at sd (http://localhost:3000/_next/static/chunks/16g.ca89g7fib.js:1:138944)
+    at http://localhost:3000/_next/static/chunks/16g.ca89g7fib.js:1:138789
+    at sf (http://localhost:3000/_next/static/chunks/16g.ca89g7fib.js:1:138797)
+    at se (http://localhost:3000/_next/static/chunks/16g.ca89g7fib.js:1:134718)
+    at s$ (http://localhost:3000/_next/static/chunks/16g.ca89g7fib.js:1:160495)
+[      86ms] [LOG] SW registered: ServiceWorkerRegistration @ http://localhost:3000/_next/static/chunks/0gfxrlcwpv8y4.js:8

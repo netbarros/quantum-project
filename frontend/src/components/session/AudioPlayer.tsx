@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useImperativeHandle, forwardRef } from "react";
 import { motion } from "framer-motion";
-import { api } from "@/lib/api";
+
+export interface AudioPlayerHandle {
+  toggle: () => void;
+}
 
 interface AudioPlayerProps {
   text: string;
   lang?: string;
-  autoPlay?: boolean;
   onPlayingChange?: (playing: boolean) => void;
 }
 
@@ -22,7 +24,7 @@ function findFeminineVoice(lang: string): SpeechSynthesisVoice | null {
   return preferred ?? ptVoices[0];
 }
 
-export function AudioPlayer({ text, lang = "pt-BR", onPlayingChange }: AudioPlayerProps) {
+export const AudioPlayer = forwardRef<AudioPlayerHandle, AudioPlayerProps>(function AudioPlayer({ text, lang = "pt-BR", onPlayingChange }, ref) {
   const [playing, setPlaying] = useState(false);
   const [supported, setSupported] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -115,6 +117,8 @@ export function AudioPlayer({ text, lang = "pt-BR", onPlayingChange }: AudioPlay
     }
   }, [supported, playing, loading, stop, playElevenLabs, playWebSpeech]);
 
+  useImperativeHandle(ref, () => ({ toggle }), [toggle]);
+
   if (!supported) return null;
 
   return (
@@ -157,4 +161,4 @@ export function AudioPlayer({ text, lang = "pt-BR", onPlayingChange }: AudioPlay
       )}
     </motion.button>
   );
-}
+});

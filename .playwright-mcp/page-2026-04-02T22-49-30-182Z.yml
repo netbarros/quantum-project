@@ -1,0 +1,22 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]: ✦
+      - heading "Bem-vindo de volta" [level=1] [ref=e7]
+      - paragraph [ref=e8]: A sua jornada de despertar continua aqui.
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e12]: E-mail
+          - textbox "E-mail" [ref=e13]:
+            - /placeholder: seu@email.com
+        - generic [ref=e14]:
+          - generic [ref=e15]: Senha
+          - textbox "Senha" [ref=e16]:
+            - /placeholder: Sua senha secreta
+        - button "Continuar a Jornada" [ref=e17]
+      - paragraph [ref=e19]:
+        - text: Novo por aqui?
+        - link "Iniciar transformação" [ref=e20] [cursor=pointer]:
+          - /url: /register
+  - alert [ref=e21]

@@ -101,6 +101,7 @@ export const onboardingController = {
           id: true,
           email: true,
           name: true,
+          role: true,
           profileType: true,
           level: true,
           consciousnessScore: true,

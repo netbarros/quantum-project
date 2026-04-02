@@ -1,0 +1,45 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e5]:
+      - generic [ref=e6]:
+        - link "Quantum" [ref=e7] [cursor=pointer]:
+          - /url: /session
+        - generic [ref=e8]:
+          - link "Hoje" [ref=e9] [cursor=pointer]:
+            - /url: /session
+            - text: Hoje
+          - link "Jornada" [ref=e11] [cursor=pointer]:
+            - /url: /history
+          - link "Planos" [ref=e12] [cursor=pointer]:
+            - /url: /plans
+          - link "Perfil" [ref=e13] [cursor=pointer]:
+            - /url: /profile
+          - link "Admin" [ref=e14] [cursor=pointer]:
+            - /url: /admin
+          - button "Sair" [ref=e15]
+    - main [ref=e16]:
+      - generic [ref=e19]:
+        - generic:
+          - generic:
+            - img
+        - generic [ref=e30]:
+          - generic [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+            - img [ref=e40]
+          - paragraph [ref=e42]: Sofia · Reflexão
+        - generic [ref=e72]:
+          - generic [ref=e73]:
+            - generic [ref=e74]: ❂
+            - generic [ref=e75]: Reflexão
+          - paragraph [ref=e77]: Onde no seu corpo você sente tensão quando pensa nos seus problemas?
+          - button "✍️ Escreva sua reflexão... (opcional)" [ref=e80]:
+            - generic [ref=e81]: ✍️
+            - generic [ref=e82]: Escreva sua reflexão... (opcional)
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - button [ref=e54]:
+              - img [ref=e55]
+            - button "Ligar música ambiente" [ref=e57]:
+              - img [ref=e58]
+          - button "Continuar" [active] [ref=e61]
+  - alert [ref=e4]

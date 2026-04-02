@@ -1,0 +1,7 @@
+[     100ms] [LOG] SW registered: ServiceWorkerRegistration @ http://localhost:3000/_next/static/chunks/0gfxrlcwpv8y4.js:8
+[     837ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://source.unsplash.com/800x600/?sunrise,meditation,morning:0
+[   21789ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://source.unsplash.com/800x600/?cosmos,nebula,universe:0
+[   39482ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://source.unsplash.com/800x600/?calm,water,reflection,lake:0
+[   57432ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://source.unsplash.com/800x600/?mountain,peak,summit:0
+[   65220ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://source.unsplash.com/800x600/?forest,path,mystery:0
+[   73222ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://source.unsplash.com/800x600/?stars,galaxy,night-sky:0

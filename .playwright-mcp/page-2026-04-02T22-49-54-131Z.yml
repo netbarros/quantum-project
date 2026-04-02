@@ -1,0 +1,44 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e22]:
+    - navigation [ref=e23]:
+      - generic [ref=e24]:
+        - link "Quantum" [ref=e25] [cursor=pointer]:
+          - /url: /session
+        - generic [ref=e26]:
+          - link "Hoje" [ref=e27] [cursor=pointer]:
+            - /url: /session
+            - text: Hoje
+          - link "Jornada" [ref=e29] [cursor=pointer]:
+            - /url: /history
+          - link "Planos" [ref=e30] [cursor=pointer]:
+            - /url: /plans
+          - link "Perfil" [ref=e31] [cursor=pointer]:
+            - /url: /profile
+          - link "Admin" [ref=e32] [cursor=pointer]:
+            - /url: /admin
+          - button "Sair" [ref=e33]
+    - main [ref=e34]:
+      - generic [ref=e37]:
+        - generic:
+          - generic:
+            - img
+        - generic [ref=e48]:
+          - generic [ref=e49] [cursor=pointer]:
+            - img [ref=e50]
+            - img [ref=e58]
+          - paragraph [ref=e60]: Sofia · Direção
+          - paragraph [ref=e61]: Novo começo. Cada retorno é uma prova de coragem.
+          - generic [ref=e62]: Conteúdo base
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - generic [ref=e66]: ✦
+            - generic [ref=e67]: Direção
+          - paragraph [ref=e69]: Hoje vamos trabalhar a presença e o ancoramento.
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - button [disabled] [ref=e72]:
+              - img [ref=e73]
+            - button "Ligar música ambiente" [ref=e75]:
+              - img [ref=e76]
+          - button "Continuar" [ref=e79]
+  - alert [ref=e21]

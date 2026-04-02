@@ -3,15 +3,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
-const UNSPLASH_KEYWORDS: Record<string, string> = {
-  direction: "sunrise,meditation,morning",
-  explanation: "cosmos,nebula,universe",
-  reflection: "calm,water,reflection,lake",
-  action: "mountain,peak,summit",
-  question: "forest,path,mystery",
-  affirmation: "stars,galaxy,night-sky",
-  practice: "lotus,zen,temple",
-  integration: "ocean,horizon,sunset",
+// Picsum photo IDs curated per block mood (free, no API key, reliable)
+const BLOCK_IMAGE_IDS: Record<string, number> = {
+  direction: 1039,    // sunrise/golden light
+  explanation: 1069,   // starry cosmos
+  reflection: 1036,    // calm water/lake
+  action: 866,         // mountain landscape
+  question: 1040,      // misty forest
+  affirmation: 1062,   // galaxy/night sky
+  practice: 1053,      // zen/nature
+  integration: 1056,   // ocean horizon
 };
 
 const SVG_COLORS: Record<string, { primary: string; secondary: string }> = {
@@ -160,10 +161,9 @@ export function BlockBackground({ blockType }: BlockBackgroundProps) {
   // Load Unsplash image
   useEffect(() => {
     setImageLoaded(false);
-    const keywords = UNSPLASH_KEYWORDS[blockType];
-    if (!keywords) return;
+    const photoId = BLOCK_IMAGE_IDS[blockType];
+    if (!photoId) return;
 
-    // Check sessionStorage cache
     const cacheKey = `bg-${blockType}`;
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
@@ -171,7 +171,7 @@ export function BlockBackground({ blockType }: BlockBackgroundProps) {
       return;
     }
 
-    const url = `https://source.unsplash.com/800x600/?${keywords}`;
+    const url = `https://picsum.photos/id/${photoId}/800/600`;
     const img = new Image();
     const timer = setTimeout(() => { /* 4s timeout — skip if slow */ }, 4000);
 

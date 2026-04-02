@@ -7,7 +7,15 @@
       "Bash(npx vitest:*)",
       "Bash(npm test:*)",
       "Bash(git add:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(docker-compose exec:*)",
+      "Bash(find /c/lotus/devocional -type f \\\\\\(-name package.json -path */backend/package.json -o -name package.json -path */frontend/package.json \\\\\\))",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_fill_form",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_console_messages"
     ]
   }
 }

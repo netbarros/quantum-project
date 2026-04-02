@@ -1,0 +1,59 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Quantum" [ref=e5] [cursor=pointer]:
+          - /url: /session
+        - generic [ref=e6]:
+          - link "Hoje" [ref=e7] [cursor=pointer]:
+            - /url: /session
+          - link "Jornada" [ref=e8] [cursor=pointer]:
+            - /url: /history
+          - link "Planos" [ref=e9] [cursor=pointer]:
+            - /url: /plans
+            - text: Planos
+          - link "Perfil" [ref=e11] [cursor=pointer]:
+            - /url: /profile
+          - link "Admin" [ref=e12] [cursor=pointer]:
+            - /url: /admin
+          - button "Sair" [ref=e13]
+    - main [ref=e14]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - heading "Sua consciência está despertando." [level=1] [ref=e18]
+          - paragraph [ref=e19]: Você chegou até aqui. O que acontece quando você não para?
+        - generic [ref=e21]:
+          - img [ref=e22]
+          - generic [ref=e27]:
+            - paragraph [ref=e28]: "10"
+            - paragraph [ref=e29]: beginner
+        - generic [ref=e30]:
+          - paragraph [ref=e31]:
+            - text: Em
+            - generic [ref=e32]: 1 dias
+            - text: você chegou a 10 pontos.
+            - text: Imagine em 365.
+          - generic [ref=e36]:
+            - generic [ref=e37]: Dia 7 (Você está aqui)
+            - generic [ref=e38]: Dia 365
+        - generic [ref=e39]:
+          - generic [ref=e40]: Recomendado
+          - paragraph [ref=e41]: Acesso Completo
+          - generic [ref=e42]:
+            - generic [ref=e43]: R$ 297
+            - generic [ref=e44]: / ano
+          - list [ref=e45]:
+            - listitem [ref=e46]:
+              - generic [ref=e47]: ✓
+              - text: Sessões adaptativas Ilimitadas
+            - listitem [ref=e48]:
+              - generic [ref=e49]: ✓
+              - text: Personalização via I.A.
+            - listitem [ref=e50]:
+              - generic [ref=e51]: ✓
+              - text: Modo Focus + Integração
+        - generic [ref=e52]:
+          - button "Continuar minha jornada" [ref=e53]
+          - button "Ver mais detalhes (R$ 47/m)" [ref=e54]
+        - paragraph [ref=e56]: 4.200+ pessoas em transformação hoje
+  - alert [ref=e58]

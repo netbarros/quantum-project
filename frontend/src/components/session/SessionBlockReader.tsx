@@ -1,10 +1,10 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VARIANTS, TRANSITIONS } from "@/lib/animations";
 import { ReflectionInput } from "./ReflectionInput";
 import { SofiaOrb } from "./SofiaOrb";
-import { AudioPlayer } from "./AudioPlayer";
+import { AudioPlayer, type AudioPlayerHandle } from "./AudioPlayer";
 import { AmbientParticles } from "./AmbientParticles";
 import { BlockBackground } from "./BlockBackground";
 import { AmbientMusic } from "./AmbientMusic";
@@ -60,49 +60,39 @@ export function SessionBlockReader({
   const isLast = currentIndex === BLOCK_KEYS.length - 1;
   const level = progress?.level ?? "BEGINNER";
 
-  // Stop speech on block change
+  // Auto-play voice preference
+  const [autoVoice, setAutoVoice] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("quantum-auto-voice") !== "false";
+  });
+
+  const audioPlayerRef = useRef<AudioPlayerHandle>(null);
+
+  // Auto-play voice when block changes (if enabled)
   useEffect(() => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-    setSpeaking(false);
-  }, [currentIndex]);
+    if (!autoVoice) return;
+    // Small delay to let the transition finish before speaking
+    const timer = setTimeout(() => {
+      if (audioPlayerRef.current && !speaking) {
+        audioPlayerRef.current.toggle();
+      }
+    }, 800);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex, autoVoice]);
 
-  // Toggle speech — called when orb is clicked
-  const toggleSpeech = useCallback(() => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-
-    if (speaking) {
-      window.speechSynthesis.cancel();
+  const toggleAutoVoice = useCallback(() => {
+    const next = !autoVoice;
+    setAutoVoice(next);
+    localStorage.setItem("quantum-auto-voice", String(next));
+    if (!next && speaking) {
+      // Stop current speech when disabling auto-voice
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
       setSpeaking(false);
-      return;
     }
-
-    const text = content[blockKey];
-    if (!text) return;
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "pt-BR";
-    utterance.rate = 0.85;
-    utterance.pitch = 1.15;
-    utterance.volume = 0.92;
-
-    // Find feminine Portuguese voice
-    const voices = window.speechSynthesis.getVoices();
-    const ptVoices = voices.filter((v) => v.lang.startsWith("pt"));
-    const femKeywords = ["female", "feminino", "luciana", "vitória", "maria", "francisca", "raquel", "fernanda"];
-    const femVoice = ptVoices.find((v) => femKeywords.some((k) => v.name.toLowerCase().includes(k)));
-    const preferred = femVoice ?? ptVoices.find((v) => v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("microsoft"));
-    if (preferred) utterance.voice = preferred;
-    else if (ptVoices[0]) utterance.voice = ptVoices[0];
-
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => setSpeaking(false);
-
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
-    setSpeaking(true);
-  }, [blockKey, content, speaking]);
+  }, [autoVoice, speaking]);
 
   const advance = () => {
     if (isLast) onComplete();
@@ -141,7 +131,7 @@ export function SessionBlockReader({
           animate={{ opacity: 1 }}
           className="flex flex-col items-center gap-1 py-2 z-10 relative"
         >
-          <SofiaOrb blockType={blockKey} size="md" level={level} speaking={speaking} onClick={toggleSpeech} />
+          <SofiaOrb blockType={blockKey} size="md" level={level} speaking={speaking} onClick={toggleAutoVoice} />
           <p className="text-[10px] text-[var(--q-text-tertiary)] uppercase tracking-[0.2em]">
             Sofia · {config.label}
           </p>
@@ -171,6 +161,15 @@ export function SessionBlockReader({
           )}
         </motion.div>
       )}
+
+      {/* Hidden AudioPlayer — auto-plays via ref, orb controls on/off */}
+      <div className="hidden">
+        <AudioPlayer
+          ref={audioPlayerRef}
+          text={content[blockKey] ?? ""}
+          onPlayingChange={setSpeaking}
+        />
+      </div>
 
       <AnimatePresence mode="wait" custom={direction}>
         {config.fullScreen ? (
@@ -206,7 +205,7 @@ export function SessionBlockReader({
               transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
               className="mb-3 relative z-10"
             >
-              <SofiaOrb blockType="affirmation" size="lg" level={level} speaking={speaking} onClick={toggleSpeech} />
+              <SofiaOrb blockType="affirmation" size="lg" level={level} speaking={speaking} onClick={toggleAutoVoice} />
             </motion.div>
 
             <motion.p
@@ -227,14 +226,15 @@ export function SessionBlockReader({
               &quot;{content[blockKey]}&quot;
             </motion.p>
 
-            <motion.div
+            {/* Auto-voice indicator */}
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2 }}
-              className="mt-5 relative z-10"
+              className="text-[9px] text-[var(--q-text-tertiary)] uppercase tracking-widest mt-4 relative z-10"
             >
-              <AudioPlayer text={content[blockKey]} />
-            </motion.div>
+              {autoVoice ? "Sofia está falando" : "Toque no orb para ativar Sofia"}
+            </motion.p>
 
             <motion.button
               onClick={advance}

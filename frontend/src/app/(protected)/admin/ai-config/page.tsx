@@ -324,6 +324,34 @@ export default function AdminAiConfigPage() {
                   Alterar voz
                 </motion.button>
               </div>
+              {data.hasElevenlabsKey && (
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={async () => {
+                    try {
+                      toast.show("Testando voz de Sofia...", "info");
+                      const res = await fetch("/api/tts/generate", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                        },
+                        body: JSON.stringify({ text: "Olá, eu sou Sofia. Estou aqui para guiar sua jornada de transformação." }),
+                      });
+                      if (!res.ok) throw new Error(`${res.status}`);
+                      const blob = await res.blob();
+                      const audio = new Audio(URL.createObjectURL(blob));
+                      audio.play();
+                      toast.show("Voz de Sofia reproduzindo", "success");
+                    } catch {
+                      toast.show("Falha ao testar voz — verifique a chave", "error");
+                    }
+                  }}
+                  className="mt-3 w-full h-9 rounded-full border border-[var(--q-accent-8)]/40 text-[var(--q-accent-9)] text-xs font-medium hover:bg-[var(--q-accent-dim)] transition-colors"
+                >
+                  Ouvir Sofia
+                </motion.button>
+              )}
               <p className="text-[10px] text-[var(--q-text-tertiary)] mt-2">Free tier: 10k chars/mês em elevenlabs.io — vozes: Sarah (padrão), Rachel, Bella</p>
             </motion.div>
 

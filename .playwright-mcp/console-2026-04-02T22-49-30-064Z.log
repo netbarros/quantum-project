@@ -1,0 +1,3 @@
+[      40ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3000/login:0
+[      95ms] [LOG] SW registered: ServiceWorkerRegistration @ http://localhost:3000/_next/static/chunks/0gfxrlcwpv8y4.js:8
+[   22929ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://source.unsplash.com/800x600/?sunrise,meditation,morning:0

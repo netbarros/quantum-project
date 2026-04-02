@@ -1,0 +1,42 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e5]:
+      - generic [ref=e6]:
+        - link "Quantum" [ref=e7] [cursor=pointer]:
+          - /url: /session
+        - generic [ref=e8]:
+          - link "Hoje" [ref=e9] [cursor=pointer]:
+            - /url: /session
+            - text: Hoje
+          - link "Jornada" [ref=e11] [cursor=pointer]:
+            - /url: /history
+          - link "Planos" [ref=e12] [cursor=pointer]:
+            - /url: /plans
+          - link "Perfil" [ref=e13] [cursor=pointer]:
+            - /url: /profile
+          - link "Admin" [ref=e14] [cursor=pointer]:
+            - /url: /admin
+          - button "Sair" [ref=e15]
+    - main [ref=e16]:
+      - generic [ref=e19]:
+        - generic:
+          - generic:
+            - img
+        - generic [ref=e30]:
+          - generic [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+            - img [ref=e40]
+          - paragraph [ref=e42]: Sofia · Pergunta
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - generic [ref=e95]: ✧
+            - generic [ref=e96]: Pergunta
+          - paragraph [ref=e98]: Como seria o seu dia hoje se você decidisse confiar que o universo está cuidando de você?
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - button [ref=e54]:
+              - img [ref=e55]
+            - button "Ligar música ambiente" [ref=e57]:
+              - img [ref=e58]
+          - button "Continuar" [active] [ref=e61]
+  - alert [ref=e4]
