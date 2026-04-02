@@ -135,7 +135,7 @@ export default function DashboardPage() {
           min-height: 100vh;
           background: var(--q-bg-void);
           color: var(--q-text-primary);
-          font-family: var(--font-instrument, system-ui, sans-serif);
+          font-family: var(--font-dm-sans, system-ui, sans-serif);
           position: relative;
           overflow: hidden;
           padding-bottom: 60px;

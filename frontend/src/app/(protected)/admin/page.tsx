@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { AdminStatCard } from "@/components/admin/AdminStatCard";
 import { stagger, VARIANTS } from "@/lib/animations";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 interface Analytics {
   dau: number;
@@ -120,30 +121,39 @@ export default function AdminPage() {
             <h2 className="text-sm font-medium text-[var(--q-text-primary)] mb-4">
               Distribuição de Streaks
             </h2>
-            <div className="space-y-3">
-              {data.streakDistribution.map(({ range, count }) => {
-                const maxCount = Math.max(...data.streakDistribution.map((d) => d.count), 1);
-                const pct = Math.round((count / maxCount) * 100);
-                return (
-                  <div key={range} className="flex items-center gap-3">
-                    <span className="text-xs text-[var(--q-text-tertiary)] w-12 shrink-0 tabular-nums">
-                      {range}d
-                    </span>
-                    <div className="flex-1 h-2 bg-[var(--q-bg-raised)] rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                        className="h-full bg-[var(--q-accent-8)] rounded-full"
-                      />
-                    </div>
-                    <span className="text-xs text-[var(--q-text-secondary)] w-8 shrink-0 tabular-nums">
-                      {count}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            <ResponsiveContainer width="100%" height={140}>
+              <BarChart data={data.streakDistribution} margin={{ top: 4, right: 4, bottom: 0, left: -10 }}>
+                <XAxis
+                  dataKey="range"
+                  tick={{ fill: "#8b8ba8", fontSize: 10 }}
+                  axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
+                  tickLine={false}
+                  tickFormatter={(v: string) => `${v}d`}
+                />
+                <YAxis
+                  tick={{ fill: "#8b8ba8", fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={30}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "#111120",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "12px",
+                    fontSize: "12px",
+                    color: "#f0f0fa",
+                  }}
+                  formatter={(value: number) => [value, "Usuários"]}
+                  labelFormatter={(label: string) => `Streak: ${label} dias`}
+                />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]} animationDuration={800}>
+                  {data.streakDistribution.map((_, i) => (
+                    <Cell key={i} fill={i === 0 ? "#5a5a6e" : "#8b5cf6"} fillOpacity={0.6 + i * 0.1} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </motion.div>
 
           {/* ── Quick nav ───────────────────────────────── */}

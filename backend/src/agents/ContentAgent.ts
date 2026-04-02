@@ -14,12 +14,12 @@ export class ContentAgent extends BaseAgent {
 
     const inputData = message.payload as unknown as ContentInput;
 
-    // Call the AI Gateway to generate the content (handles retry and fallback internally)
     const response = await AIGateway.generateContent(inputData);
 
     return this.createResponse(message, {
       contentJSON: response.content,
       isStatic: response.isFallback,
+      modelUsed: response.modelUsed,
     });
   }
 }

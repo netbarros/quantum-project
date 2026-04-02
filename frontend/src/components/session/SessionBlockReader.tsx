@@ -164,19 +164,21 @@ export function SessionBlockReader({
       {/* Footer Navigation CTA */}
       {!config.fullScreen && (
         <div className="p-6 pb-safe flex items-center justify-between z-10 mx-auto w-full max-w-lg">
-          <button
+          <motion.button
             onClick={goBack}
             disabled={currentIndex === 0}
+            whileTap={{ scale: 0.97 }}
             className="w-12 h-12 flex items-center justify-center rounded-full text-[var(--q-text-tertiary)] hover:bg-[var(--q-bg-surface)] disabled:opacity-30 transition-colors"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-          </button>
+          </motion.button>
           
           <motion.button
             onClick={advance}
             whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.01 }}
             className="flex-1 max-w-[200px] h-14 rounded-full bg-[var(--q-accent-8)] text-white font-medium text-base shadow-[var(--q-shadow-glow-accent)]"
           >
             {isLast ? "Completar dia ✓" : "Continuar"}

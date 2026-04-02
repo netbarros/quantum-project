@@ -17,6 +17,18 @@ const loginSchema = z.object({
   password: z.string()
 });
 
+const REFRESH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: '/api/auth',
+};
+
+function setRefreshCookie(res: Response, refreshToken: string): void {
+  res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
+}
+
 export const authController = {
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -41,10 +53,12 @@ export const authController = {
       const accessToken = jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN as any });
       const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, { expiresIn: config.JWT_REFRESH_EXPIRES_IN as any });
 
+      setRefreshCookie(res, refreshToken);
+
       res.status(201).json({
         user: { id: user.id, email: user.email, name: user.name },
         accessToken,
-        refreshToken
+        refreshToken, // kept for backward compat — frontend can migrate to cookie-only
       });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -79,6 +93,8 @@ export const authController = {
       const accessToken = jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN as any });
       const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, { expiresIn: config.JWT_REFRESH_EXPIRES_IN as any });
 
+      setRefreshCookie(res, refreshToken);
+
       res.status(200).json({
         user: {
           id: user.id,
@@ -89,7 +105,7 @@ export const authController = {
           level: user.level
         },
         accessToken,
-        refreshToken
+        refreshToken, // kept for backward compat
       });
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -102,7 +118,8 @@ export const authController = {
 
   async refresh(req: Request, res: Response): Promise<void> {
     try {
-      const { refreshToken } = req.body;
+      // Read refresh token from cookie first, fallback to body for backward compat
+      const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
       if (!refreshToken) {
         res.status(401).json({ error: 'Refresh token required' });
         return;
@@ -119,9 +136,11 @@ export const authController = {
       const newAccessToken = jwt.sign(newPayload, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN as any });
       const newRefreshToken = jwt.sign(newPayload, config.JWT_REFRESH_SECRET, { expiresIn: config.JWT_REFRESH_EXPIRES_IN as any });
 
+      setRefreshCookie(res, newRefreshToken);
+
       res.status(200).json({
         accessToken: newAccessToken,
-        refreshToken: newRefreshToken
+        refreshToken: newRefreshToken, // kept for backward compat
       });
     } catch (error) {
       res.status(401).json({ error: 'Invalid or expired refresh token' });

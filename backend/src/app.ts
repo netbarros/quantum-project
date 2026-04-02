@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { config } from './config';
 import authRoutes from './routes/auth.routes';
 import onboardingRoutes from './routes/onboarding.routes';
@@ -32,20 +33,42 @@ registry.register(new ContentAgent());
 
 const app = express();
 
+// ── Security middleware ────────────────────────────────────────────────────────
+app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));
+
+const allowedOrigins = [
+  process.env.APP_URL,
+  ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000', 'http://127.0.0.1:3000'] : []),
+].filter(Boolean) as string[];
+
 app.use(
   cors({
-    origin: [
-      process.env.APP_URL ?? 'http://localhost:3000',
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-    ],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
+
 app.use(
   helmet({
-    contentSecurityPolicy: false, // configured per-environment
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'blob:'],
+        connectSrc: ["'self'", process.env.APP_URL ?? ''].filter(Boolean),
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    } : false,
+    hsts: process.env.NODE_ENV === 'production' ? {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    } : false,
   })
 );
 

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { VARIANTS } from "@/lib/animations";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface CostData {
   totalCost: number;
@@ -78,26 +79,53 @@ export default function AdminCostsPage() {
             </div>
           </div>
 
-          {/* Cost trend */}
+          {/* Cost trend — Recharts */}
           <div className="bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] rounded-[var(--q-radius-lg)] p-5">
             <h2 className="text-sm font-medium text-[var(--q-text-primary)] mb-4">Tendência diária</h2>
             {data.byDay.length > 0 ? (
-              <div className="flex items-end gap-1 h-32">
-                {(() => {
-                  const maxCost = Math.max(...data.byDay.map((d) => d.cost), 0.001);
-                  return data.byDay.slice(-14).map(({ date, cost }) => (
-                    <div key={date} className="flex-1 flex flex-col items-center gap-1">
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${Math.round((cost / maxCost) * 100)}%` }}
-                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="w-full bg-[var(--q-accent-8)] rounded-t-sm min-h-[2px]"
-                        title={`${date}: $${cost}`}
-                      />
-                    </div>
-                  ));
-                })()}
-              </div>
+              <ResponsiveContainer width="100%" height={160}>
+                <AreaChart data={data.byDay.slice(-14)} margin={{ top: 4, right: 4, bottom: 0, left: -10 }}>
+                  <defs>
+                    <linearGradient id="costGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fill: "#8b8ba8", fontSize: 10 }}
+                    axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
+                    tickLine={false}
+                    tickFormatter={(v: string) => v.slice(-5)}
+                  />
+                  <YAxis
+                    tick={{ fill: "#8b8ba8", fontSize: 10 }}
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={(v: number) => `$${v.toFixed(2)}`}
+                    width={50}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: "#111120",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "12px",
+                      fontSize: "12px",
+                      color: "#f0f0fa",
+                    }}
+                    formatter={(value: number) => [`$${value.toFixed(4)}`, "Custo"]}
+                    labelFormatter={(label: string) => `Data: ${label}`}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="cost"
+                    stroke="#8b5cf6"
+                    strokeWidth={2}
+                    fill="url(#costGradient)"
+                    animationDuration={800}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             ) : (
               <p className="text-[var(--q-text-tertiary)] text-sm">Sem dados suficientes.</p>
             )}

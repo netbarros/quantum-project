@@ -97,6 +97,24 @@ export const sessionController = {
           aiLimitWarning = true;
         }
 
+        // Query PersonalizationAgent for content adjustments (graceful degradation)
+        let adjustments: Record<string, unknown> | undefined;
+        try {
+          const personalizationMsg: AgentMessage = {
+            type: 'get_user_context',
+            payload: { userId: user.id },
+            userId: user.id,
+            timestamp: new Date(),
+            sourceAgent: 'SessionController',
+            targetAgent: 'PersonalizationAgent',
+            correlationId,
+          };
+          const pResult = await AgentRegistry.getInstance().dispatch(personalizationMsg);
+          adjustments = pResult.payload?.adjustments as Record<string, unknown> | undefined;
+        } catch (err) {
+          console.warn(`[SessionController] PersonalizationAgent failed (correlationId: ${correlationId}), continuing without adjustments`, err);
+        }
+
         const msg: AgentMessage = {
           type: 'generate_content',
           payload: {
@@ -109,6 +127,7 @@ export const sessionController = {
             consciousnessScore: user.consciousnessScore,
             streak: user.streak,
             timeAvailable: user.timeAvailable || 10,
+            adjustments,
           },
           userId: user.id,
           timestamp: new Date(),

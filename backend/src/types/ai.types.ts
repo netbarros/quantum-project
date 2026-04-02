@@ -1,3 +1,10 @@
+export interface ContentAdjustments {
+  depthLevel: 'surface' | 'moderate' | 'deep' | 'profound';
+  tone: 'gentle' | 'direct' | 'challenging' | 'provocative';
+  contentLength: 'brief' | 'standard' | 'extended';
+  focusArea: string;
+}
+
 export interface ContentInput {
   userId: string;
   day: number;
@@ -8,6 +15,7 @@ export interface ContentInput {
   consciousnessScore: number;
   streak: number;
   timeAvailable: number;
+  adjustments?: ContentAdjustments;
 }
 
 export interface ContentOutput {
@@ -25,4 +33,5 @@ export interface AIResponse {
   content: ContentOutput | null;
   error?: string;
   isFallback: boolean;
+  modelUsed?: string;
 }

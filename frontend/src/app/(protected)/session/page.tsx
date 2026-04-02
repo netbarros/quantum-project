@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from '@/hooks/useSession';
+import { useSession, type CompletionResult } from '@/hooks/useSession';
 import { SessionBlockReader } from '@/components/session/SessionBlockReader';
 import { CompletionScreen } from '@/components/session/CompletionScreen';
 import { PaywallModal } from '@/components/PaywallModal';
@@ -9,29 +9,20 @@ import { useRouter } from 'next/navigation';
 
 export default function SessionPage() {
   const { session, progress, loading, error, completeSession, paywallRequired, paywallCurrentDay } = useSession();
-  const [completionData, setCompletionData] = useState<any>(null);
+  const [completionData, setCompletionData] = useState<CompletionResult | null>(null);
+  const [completeError, setCompleteError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleComplete = async () => {
-    // Optimistically grab current stats before completion updates them
-    const oldLevel = progress?.level;
-    const oldScore = progress?.consciousnessScore || 0;
-    
-    // Complete the session through the hook (fires api call)
-    await completeSession();
-    
-    // Since useSession doesn't natively return the delta payload yet, 
-    // we can calculate the delta if the progress state updates immediately, 
-    // or just pass a static 10 for the visual effect of "Success".
-    // Alternatively, if completeSession returned the ProgressAgent data, we'd use it here.
-    // For now, we simulate the ProgressAgent return signature for UI perfection:
-    setCompletionData({
-      scoreDelta: 10,
-      newScore: oldScore + 10,
-      newStreak: (progress?.streak || 0) + 1,
-      leveledUp: false, // You would compare oldLevel with newLevel
-      newLevel: progress?.level,
-    });
+    setCompleteError(null);
+    const result = await completeSession();
+
+    if (!result) {
+      setCompleteError('Não foi possível completar a sessão. Verifique sua conexão e tente novamente.');
+      return;
+    }
+
+    setCompletionData(result);
   };
 
   if (loading) {
@@ -111,6 +102,11 @@ export default function SessionPage() {
   return (
     <div className="min-h-screen bg-[var(--q-bg-void)]">
       <div className="max-w-xl mx-auto md:py-8 h-full">
+        {completeError && (
+          <div className="mx-6 mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+            <p className="text-red-400 text-sm">{completeError}</p>
+          </div>
+        )}
         <SessionBlockReader
           contentId={session.id}
           content={session.content}

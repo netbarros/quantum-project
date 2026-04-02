@@ -8,6 +8,15 @@ export interface ProgressData {
   streak: number;
 }
 
+export interface CompletionResult {
+  scoreDelta: number;
+  newScore: number;
+  newStreak: number;
+  leveledUp: boolean;
+  newLevel: string;
+  levelProgress: number;
+}
+
 export interface SessionData {
   id: string;
   day: number;
@@ -85,8 +94,8 @@ export function useSession() {
     fetchSession();
   }, [fetchSession]);
 
-  const completeSession = async () => {
-    if (!session || !accessToken) return;
+  const completeSession = async (): Promise<CompletionResult | null> => {
+    if (!session || !accessToken) return null;
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/session/${session.id}/complete`, {
         method: 'POST',
@@ -96,15 +105,25 @@ export function useSession() {
       if (!res.ok) throw new Error('Erro ao concluir sessão.');
       const data = await res.json();
       const p = data.newProgress;
+      const oldLevel = progress?.level;
       setProgress({ currentDay: p.currentDay, consciousnessScore: p.consciousnessScore, level: p.level, streak: p.streak });
       setSession({ ...session, isCompleted: true });
-      updateUser({ 
-        streak: p.streak, 
+      updateUser({
+        streak: p.streak,
         consciousnessScore: p.consciousnessScore,
         level: p.level
       });
+      return {
+        scoreDelta: p.scoreDelta ?? (p.consciousnessScore - (progress?.consciousnessScore ?? 0)),
+        newScore: p.consciousnessScore,
+        newStreak: p.streak,
+        leveledUp: oldLevel !== p.level,
+        newLevel: p.level,
+        levelProgress: p.levelProgress ?? 0,
+      };
     } catch (err: unknown) {
-      console.error(err);
+      console.error('[useSession] completeSession failed:', err);
+      return null;
     }
   };
 

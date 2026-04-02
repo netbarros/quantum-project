@@ -25,7 +25,16 @@ export const metadata: Metadata = {
   description:
     "Plataforma de transformação comportamental movida por IA. Sua jornada de 365 dias de evolução de identidade começa aqui.",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent" },
+  icons: {
+    icon: [
+      { url: "/icon-192.svg", type: "image/svg+xml", sizes: "192x192" },
+      { url: "/icons/icon-192x192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/icons/icon-192x192.png", sizes: "192x192" },
+    ],
+  },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Quantum" },
   openGraph: {
     title: "Quantum Project",
     description: "Sistema de Transformação Comportamental com IA",
