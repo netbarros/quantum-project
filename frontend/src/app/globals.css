@@ -124,3 +124,9 @@ body {
 /* ── Glow utilities ────────────────────────────────────────── */
 .glow-accent { box-shadow: var(--q-shadow-glow-accent); }
 .text-glow-accent { text-shadow: 0 0 20px rgba(139,92,246,0.5); }
+
+/* ── Ambient orb animation ────────────────────────────────── */
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(40px, 40px) scale(1.08); }
+}

@@ -1,0 +1,16 @@
+# Pipeline: Admin Completo
+# 4 steps: parallel investigation → checkpoint → implementation → checkpoint
+
+steps:
+  - file: steps/step-01-parallel-investigation.md
+    name: "Investigação Paralela (4 agentes)"
+  - file: steps/step-02-checkpoint-review.md
+    name: "Checkpoint — Revisar Achados"
+  - file: steps/step-03-implementation.md
+    name: "Implementação"
+  - file: steps/step-04-checkpoint-approve.md
+    name: "Checkpoint — Validação Final"
+
+checkpoints:
+  - step-02-checkpoint-review
+  - step-04-checkpoint-approve

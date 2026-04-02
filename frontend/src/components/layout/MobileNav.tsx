@@ -7,6 +7,8 @@ import { motion } from 'framer-motion';
 export function MobileNav() {
   const pathname = usePathname();
 
+  if (pathname.startsWith('/onboarding')) return null;
+
   const links = [
     { href: '/session', label: 'Hoje', icon: '✦' },
     { href: '/history', label: 'Jornada', icon: '❂' },

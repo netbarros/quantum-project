@@ -9,6 +9,8 @@ export function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
+  if (pathname.startsWith('/onboarding')) return null;
+
   const links = [
     { href: '/session', label: 'Hoje' },
     { href: '/history', label: 'Jornada' },

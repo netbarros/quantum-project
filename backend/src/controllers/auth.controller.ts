@@ -56,7 +56,7 @@ export const authController = {
       setRefreshCookie(res, refreshToken);
 
       res.status(201).json({
-        user: { id: user.id, email: user.email, name: user.name },
+        user: { id: user.id, email: user.email, name: user.name, role: user.role },
         accessToken,
         refreshToken, // kept for backward compat — frontend can migrate to cookie-only
       });
@@ -100,6 +100,7 @@ export const authController = {
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
           onboardingComplete: user.onboardingComplete,
           isPremium: user.isPremium,
           level: user.level

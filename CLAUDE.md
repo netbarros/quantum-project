@@ -330,6 +330,21 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY="web-push-public"
 
 ---
 
+## Credenciais de Teste
+
+### Admin
+
+- **Email**: net.barros@gmail.com
+- **Role**: ADMIN + PREMIUM
+- **Promoção**: `cd backend && npx tsx src/scripts/grantAdmin.ts net.barros@gmail.com`
+- **Nota**: Após promoção, re-login para atualizar JWT com role ADMIN
+
+### Sistema
+
+- **Admin padrão (seed)**: system@quantumproject.app (role ADMIN, criado via `npm run prisma:seed`)
+
+---
+
 ## OpenSquad — Squads Configurados
 
 Este projeto usa [OpenSquad](https://github.com/renatoasse/opensquad) para orquestração de agentes de IA.
@@ -340,6 +355,7 @@ Este projeto usa [OpenSquad](https://github.com/renatoasse/opensquad) para orque
 /opensquad run squad-fase-7-retention      # Fase 7
 /opensquad run squad-fase-8-admin          # Fase 8
 /opensquad run squad-fase-9-producao       # Fase 9
+/opensquad run admin-completo              # Admin system production-ready
 ```
 
 ---

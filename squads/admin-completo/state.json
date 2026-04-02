@@ -1,0 +1,25 @@
+{
+  "squad": "admin-completo",
+  "status": "completed",
+  "step": {
+    "current": 4,
+    "total": 4,
+    "label": "Checkpoint — Validação Final"
+  },
+  "agents": [
+    { "id": "ana-admin", "name": "Ana Admin", "icon": "🎨", "status": "done", "desk": { "col": 1, "row": 1 } },
+    { "id": "bruno-backend", "name": "Bruno Backend", "icon": "⚙️", "status": "done", "desk": { "col": 2, "row": 1 } },
+    { "id": "carla-contracts", "name": "Carla Contracts", "icon": "📋", "status": "done", "desk": { "col": 3, "row": 1 } },
+    { "id": "diego-guard", "name": "Diego Guard", "icon": "🔐", "status": "done", "desk": { "col": 4, "row": 1 } },
+    { "id": "sofia-sintese", "name": "Sofia Síntese", "icon": "🔬", "status": "done", "desk": { "col": 1, "row": 2 } }
+  ],
+  "handoff": {
+    "from": "sofia-sintese",
+    "to": "implementation",
+    "message": "Todos os fixes aplicados. tsc 0 errors, 78/78 tests passing.",
+    "completedAt": "2026-04-02T19:57:00.000Z"
+  },
+  "startedAt": "2026-04-02T19:45:00.000Z",
+  "updatedAt": "2026-04-02T19:57:00.000Z",
+  "completedAt": "2026-04-02T19:57:00.000Z"
+}

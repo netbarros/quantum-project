@@ -5,6 +5,7 @@ import {
   listUsers,
   getUserDetail,
   updatePremium,
+  updateRole,
   getAnalytics,
   getCosts,
 } from '../controllers/admin.controller';
@@ -18,6 +19,7 @@ router.use(adminMiddleware);
 router.get('/admin/users', listUsers);
 router.get('/admin/users/:id', getUserDetail);
 router.put('/admin/users/:id/premium', updatePremium);
+router.put('/admin/users/:id/role', updateRole);
 router.get('/admin/analytics', getAnalytics);
 router.get('/admin/costs', getCosts);
 router.post('/admin/broadcast', sendNotification);

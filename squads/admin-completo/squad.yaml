@@ -1,0 +1,34 @@
+# Squad: Admin Completo
+# Sistema admin production-ready com dashboard, guard, role management e broadcast
+
+squad:
+  code: admin-completo
+  name: "Admin Completo"
+  description: "Tornar admin system production-ready: guard de rota, user detail, broadcast fix, role management, CLAUDE.md credentials"
+  icon: "🛡️"
+  version: "1.0"
+  created: "2026-04-02"
+
+agents:
+  - id: ana-admin
+    file: ./agents/ana-admin.agent.md
+  - id: bruno-backend
+    file: ./agents/bruno-backend.agent.md
+  - id: carla-contracts
+    file: ./agents/carla-contracts.agent.md
+  - id: diego-guard
+    file: ./agents/diego-guard.agent.md
+  - id: sofia-sintese
+    file: ./agents/sofia-sintese.agent.md
+
+pipeline:
+  file: ./pipeline/pipeline.yaml
+
+skills:
+  - code_read
+  - code_write
+  - grep_search
+
+data:
+  - pipeline/data/research-brief.md
+  - pipeline/data/quality-criteria.md

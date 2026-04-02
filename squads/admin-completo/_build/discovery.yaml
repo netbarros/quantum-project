@@ -1,0 +1,34 @@
+squad_code: "admin-completo"
+purpose: "Tornar o sistema admin production-ready: 1) Fix broadcast schema mismatch FE↔BE, 2) Criar user detail page com premium/role toggle, 3) Adicionar AdminRoute guard no frontend, 4) Adicionar role no login response, 5) Endpoint updateRole, 6) Documentar credenciais de teste"
+domain: "automation"
+
+company:
+  name: "Quantum Project"
+  tone: "Ritualístico, imersivo, transformacional — UI minimalista e calma"
+  products: "Plataforma SaaS de transformação comportamental com IA (365 dias)"
+
+language: "pt-BR"
+
+context:
+  trigger: "manual"
+  systems: "Express + TypeScript + Prisma + Next.js App Router + Framer Motion + React Query"
+  frequency: "once"
+
+tools_needed:
+  - "code_read"
+  - "code_write"
+  - "grep_search"
+
+reference_files:
+  - "backend/src/controllers/auth.controller.ts"
+  - "backend/src/controllers/admin.controller.ts"
+  - "backend/src/controllers/notification.controller.ts"
+  - "backend/src/routes/admin.routes.ts"
+  - "backend/src/middleware/admin.middleware.ts"
+  - "frontend/src/components/AdminRoute.tsx"
+  - "frontend/src/components/ProtectedRoute.tsx"
+  - "frontend/src/app/(protected)/admin/layout.tsx"
+  - "frontend/src/app/(protected)/admin/users/[id]/page.tsx"
+  - "frontend/src/app/(protected)/admin/broadcast/page.tsx"
+
+target_formats: []

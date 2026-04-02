@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
+import { api } from '@/lib/api';
 import { User } from '@/types';
 import { motion } from 'framer-motion';
-import { VARIANTS } from '@/lib/animations';
+import { VARIANTS, TRANSITIONS, stagger } from '@/lib/animations';
 
 const PROFILE_TYPE_LABELS: Record<string, { label: string; description: string; emoji: string }> = {
   REACTIVE: { label: 'Reativo', emoji: '🌊', description: 'Você sente as emoções com intensidade. Este espaço vai te ajudar a encontrar calma.' },
@@ -38,72 +40,53 @@ const EMOTIONAL_STATE_LABELS: Record<string, string> = {
 };
 
 export default function ProfilePage() {
-  const { accessToken, updateUser } = useAuth();
+  const { updateUser } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const [profile, setProfile] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editLanguage, setEditLanguage] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+  const { data: profile, isLoading, error } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const res = await api.get<{ user: User }>('/profile');
+      const user = res.data.user;
+      setEditName(user.name ?? '');
+      setEditLanguage(user.language ?? 'pt-BR');
+      return user;
+    },
+    staleTime: 1000 * 60 * 2,
+  });
 
-  useEffect(() => {
-    if (!accessToken) return;
-    fetch(`${BASE_URL}/profile`, { headers: { Authorization: `Bearer ${accessToken}` } })
-      .then((r) => r.json())
-      .then(({ user }) => {
-        setProfile(user);
-        setEditName(user.name ?? '');
-        setEditLanguage(user.language ?? 'pt-BR');
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [accessToken, BASE_URL]);
-
-  const handleSave = async () => {
-    if (!accessToken) return;
-    setSaving(true);
-    setSaveError(null);
-    try {
-      const res = await fetch(`${BASE_URL}/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ name: editName, language: editLanguage }),
-      });
-      if (!res.ok) throw new Error('Falha ao salvar.');
-      const { user: updated } = await res.json();
-      setProfile(updated);
+  const updateMutation = useMutation({
+    mutationFn: async (data: { name: string; language: string }) => {
+      const res = await api.put<{ user: User }>('/profile', data);
+      return res.data.user;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(['profile'], updated);
       updateUser(updated);
       setEditing(false);
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Erro inesperado.');
-    } finally {
-      setSaving(false);
-    }
-  };
+    },
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--q-bg-void)]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-t-[var(--q-accent-8)]" />
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--q-accent-8)]" />
       </div>
     );
   }
 
-  if (!profile) {
+  if (error || !profile) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[var(--q-bg-void)]">
         <p className="text-[var(--q-text-secondary)]">Não foi possível carregar o perfil.</p>
-        <button onClick={() => router.back()} className="text-[var(--q-accent-9)] hover:text-white transition-colors">
+        <motion.button whileTap={{ scale: 0.97 }} onClick={() => router.back()} className="text-[var(--q-accent-9)] hover:text-white transition-colors">
           ← Voltar
-        </button>
+        </motion.button>
       </div>
     );
   }
@@ -113,19 +96,19 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[var(--q-bg-void)] p-6 pb-24">
-      <motion.div variants={{ animate: { transition: { staggerChildren: 0.1 } } }} initial="initial" animate="animate" className="max-w-xl mx-auto space-y-4">
+      <motion.div {...stagger(0.1)} initial="initial" animate="animate" className="max-w-xl mx-auto space-y-4">
         <motion.div variants={VARIANTS.slideUp} className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-[family-name:var(--font-instrument)] italic font-bold text-[var(--q-text-primary)]">
             Seu Espaço
           </h1>
-          <button onClick={() => router.back()} className="text-[var(--q-text-secondary)] text-sm hover:text-[var(--q-text-primary)] transition-colors">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => router.back()} className="text-[var(--q-text-secondary)] text-sm hover:text-[var(--q-text-primary)] transition-colors">
             Voltar
-          </button>
+          </motion.button>
         </motion.div>
 
         {/* Profile Card */}
         {profileMeta && (
-          <motion.div variants={VARIANTS.slideUp} className="bg-[var(--q-bg-surface)] border border-[var(--q-accent-8)]/30 rounded-2xl p-6 shadow-[var(--q-shadow-glow-accent)] relative overflow-hidden">
+          <motion.div variants={VARIANTS.slideUp} transition={TRANSITIONS.spring} className="bg-[var(--q-bg-surface)] border border-[var(--q-accent-8)]/30 rounded-2xl p-6 shadow-[var(--q-shadow-glow-accent)] relative overflow-hidden">
              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--q-accent-8)] opacity-10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
              <div className="flex items-center gap-4 mb-3">
                <span className="text-4xl">{profileMeta.emoji}</span>
@@ -140,16 +123,16 @@ export default function ProfilePage() {
 
         {/* Level */}
         {levelMeta && (
-          <motion.div variants={VARIANTS.slideUp} className="bg-[var(--q-bg-surface)] border border-[var(--q-border-subtle)] rounded-2xl p-6">
+          <motion.div variants={VARIANTS.slideUp} transition={TRANSITIONS.spring} className="bg-[var(--q-bg-surface)] border border-[var(--q-border-subtle)] rounded-2xl p-6">
             <p className="text-[10px] text-[var(--q-text-secondary)] font-bold uppercase tracking-widest mb-4">Consciência e Nível</p>
             <div className="flex justify-between items-center mb-2">
               <span className="font-semibold text-[var(--q-text-primary)]">{levelMeta.label}</span>
               <span className="text-sm font-bold text-[var(--q-cyan-9)]">{profile.consciousnessScore ?? 0} pts</span>
             </div>
             <div className="h-1.5 w-full bg-[var(--q-bg-depth)] rounded-full overflow-hidden">
-               <motion.div 
-                 initial={{ width: 0 }} 
-                 animate={{ width: `${levelMeta.progress}%` }} 
+               <motion.div
+                 initial={{ width: 0 }}
+                 animate={{ width: `${levelMeta.progress}%` }}
                  transition={{ duration: 1, ease: "easeOut" }}
                  className="h-full bg-gradient-to-r from-[var(--q-cyan-8)] to-[var(--q-accent-9)] rounded-full"
                />
@@ -163,22 +146,27 @@ export default function ProfilePage() {
         )}
 
         {/* Form Personal Data */}
-        <motion.div variants={VARIANTS.slideUp} className="bg-[var(--q-bg-surface)] border border-[var(--q-border-subtle)] rounded-2xl p-6">
+        <motion.div variants={VARIANTS.slideUp} transition={TRANSITIONS.spring} className="bg-[var(--q-bg-surface)] border border-[var(--q-border-subtle)] rounded-2xl p-6">
            <div className="flex justify-between items-center mb-6">
               <p className="text-[10px] text-[var(--q-text-secondary)] font-bold uppercase tracking-widest">Ajustes da Alma</p>
               {!editing ? (
-                <button onClick={() => setEditing(true)} className="text-xs font-bold text-[var(--q-accent-9)]">EDITAR</button>
+                <motion.button whileTap={{ scale: 0.97 }} onClick={() => setEditing(true)} className="text-xs font-bold text-[var(--q-accent-9)]">EDITAR</motion.button>
               ) : (
                 <div className="flex gap-4">
-                  <button onClick={() => setEditing(false)} className="text-xs text-[var(--q-text-tertiary)] hover:text-white transition-colors">CANCELAR</button>
-                  <button onClick={handleSave} disabled={saving} className="text-xs font-bold text-[var(--q-accent-9)] hover:opacity-80 transition-opacity">
-                    {saving ? 'SALVANDO...' : 'SALVAR'}
-                  </button>
+                  <motion.button whileTap={{ scale: 0.97 }} onClick={() => setEditing(false)} className="text-xs text-[var(--q-text-tertiary)] hover:text-white transition-colors">CANCELAR</motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => updateMutation.mutate({ name: editName, language: editLanguage })}
+                    disabled={updateMutation.isPending}
+                    className="text-xs font-bold text-[var(--q-accent-9)] hover:opacity-80 transition-opacity"
+                  >
+                    {updateMutation.isPending ? 'SALVANDO...' : 'SALVAR'}
+                  </motion.button>
                 </div>
               )}
            </div>
 
-           {saveError && <p className="text-xs text-red-400 mb-4">{saveError}</p>}
+           {updateMutation.error && <p className="text-xs text-red-400 mb-4">{updateMutation.error instanceof Error ? updateMutation.error.message : 'Erro inesperado.'}</p>}
 
            <div className="space-y-4">
              <div>
@@ -203,7 +191,7 @@ export default function ProfilePage() {
 
         {/* Answers */}
         {profile.onboardingComplete && (
-          <motion.div variants={VARIANTS.slideUp} className="bg-[var(--q-bg-surface)] border border-[var(--q-border-subtle)] rounded-2xl p-6">
+          <motion.div variants={VARIANTS.slideUp} transition={TRANSITIONS.spring} className="bg-[var(--q-bg-surface)] border border-[var(--q-border-subtle)] rounded-2xl p-6">
             <p className="text-[10px] text-[var(--q-text-secondary)] font-bold uppercase tracking-widest mb-4">Mapeamento Inicial</p>
             <div className="space-y-4">
                {[

@@ -16,8 +16,11 @@ const SubscribeSchema = z.object({
 
 const SendSchema = z.object({
   userId: z.string().optional(),
-  type: z.enum(['DAILY_REMINDER', 'MOTIVATIONAL_RESET', 'RECOVERY_FLOW']),
+  type: z.enum(['DAILY_REMINDER', 'MOTIVATIONAL_RESET', 'RECOVERY_FLOW', 'SYSTEM']),
   broadcast: z.boolean().optional().default(false),
+  title: z.string().min(3).max(100).optional(),
+  body: z.string().min(10).max(500).optional(),
+  userFilter: z.enum(['all', 'premium', 'free']).optional(),
 });
 
 export async function subscribe(
@@ -62,31 +65,44 @@ export async function sendNotification(
       return;
     }
 
-    const { userId, type, broadcast } = parsed.data;
+    const { userId, type, broadcast, title, body, userFilter } = parsed.data;
     let sentCount = 0;
     let failedCount = 0;
 
     if (broadcast) {
-      const premiumUsers = await prisma.user.findMany({
-        where: { isPremium: true },
-        select: { id: true, name: true, level: true },
+      // Build user filter based on userFilter param
+      const where: Record<string, unknown> = {};
+      if (userFilter === 'premium') where.isPremium = true;
+      else if (userFilter === 'free') where.isPremium = false;
+      // 'all' or undefined = no filter
+
+      const users = await prisma.user.findMany({
+        where,
+        select: { id: true, name: true, level: true, pushSubscription: true },
       });
 
-      for (const u of premiumUsers) {
+      for (const u of users) {
         try {
-          await AgentRegistry.getInstance().dispatch({
-            type: 'send_notification',
-            userId: u.id,
-            payload: {
+          if (type === 'SYSTEM' && title && body) {
+            // SYSTEM notifications bypass NotificationAgent — save directly with custom content
+            await prisma.notification.create({
+              data: { userId: u.id, type: 'SYSTEM', title, body },
+            });
+          } else {
+            await AgentRegistry.getInstance().dispatch({
+              type: 'send_notification',
               userId: u.id,
-              daysMissed: type === 'DAILY_REMINDER' ? 1 : type === 'MOTIVATIONAL_RESET' ? 3 : 7,
-              level: u.level,
-              name: u.name ?? 'você',
-            },
-            timestamp: new Date(),
-            sourceAgent: 'NotificationController',
-            targetAgent: 'NotificationAgent',
-          });
+              payload: {
+                userId: u.id,
+                daysMissed: type === 'DAILY_REMINDER' ? 1 : type === 'MOTIVATIONAL_RESET' ? 3 : 7,
+                level: u.level,
+                name: u.name ?? 'você',
+              },
+              timestamp: new Date(),
+              sourceAgent: 'NotificationController',
+              targetAgent: 'NotificationAgent',
+            });
+          }
           sentCount++;
         } catch {
           failedCount++;
@@ -95,14 +111,20 @@ export async function sendNotification(
     } else if (userId) {
       const u = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, level: true } });
       if (u) {
-        await AgentRegistry.getInstance().dispatch({
-          type: 'send_notification',
-          userId,
-          payload: { userId, daysMissed: 1, level: u.level, name: u.name ?? 'você' },
-          timestamp: new Date(),
-          sourceAgent: 'NotificationController',
-          targetAgent: 'NotificationAgent',
-        });
+        if (type === 'SYSTEM' && title && body) {
+          await prisma.notification.create({
+            data: { userId, type: 'SYSTEM', title, body },
+          });
+        } else {
+          await AgentRegistry.getInstance().dispatch({
+            type: 'send_notification',
+            userId,
+            payload: { userId, daysMissed: 1, level: u.level, name: u.name ?? 'você' },
+            timestamp: new Date(),
+            sourceAgent: 'NotificationController',
+            targetAgent: 'NotificationAgent',
+          });
+        }
         sentCount = 1;
       }
     }

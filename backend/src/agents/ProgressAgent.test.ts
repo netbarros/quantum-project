@@ -157,7 +157,7 @@ describe('ProgressAgent', () => {
     const res = await agent.execute(makeMessage());
 
     // Assert — streak went from 5 to 6
-    const txCall = vi.mocked(prisma.$transaction).mock.calls[0][0] as unknown[];
+    const txCall = vi.mocked(prisma.$transaction).mock.calls[0][0] as unknown as unknown[];
     // The transaction receives an array; we verify update was called
     expect(prisma.$transaction).toHaveBeenCalledTimes(1);
     expect(res.payload.streak).toBe(6);

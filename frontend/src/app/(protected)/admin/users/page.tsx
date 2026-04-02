@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
@@ -28,11 +29,12 @@ interface UsersResponse {
 }
 
 export default function AdminUsersPage() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [isPremiumFilter, setIsPremiumFilter] = useState<"" | "true" | "false">("");
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "users", { search, page, isPremiumFilter }],
     queryFn: () =>
       api
@@ -95,32 +97,38 @@ export default function AdminUsersPage() {
       </motion.div>
 
       {/* Table */}
-      {isLoading ? (
+      {error ? (
+        <div className="p-4 rounded-[var(--q-radius-lg)] bg-[var(--q-red-dim)] border border-[var(--q-red-8)]/20 text-center">
+          <p className="text-[var(--q-red-9)] text-sm">Erro ao carregar usuários.</p>
+        </div>
+      ) : isLoading ? (
         <div className="h-64 bg-[var(--q-bg-surface)] rounded-[var(--q-radius-lg)] border border-[var(--q-border-default)] animate-pulse" />
       ) : data ? (
         <>
-          <UserTable users={data.users} />
+          <UserTable users={data.users} onUserClick={(id) => router.push(`/admin/users/${id}`)} />
 
           {/* Pagination */}
           {data.totalPages > 1 && (
             <div className="flex items-center justify-center gap-4 mt-6">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.97 }}
                 disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
                 className="px-4 py-2 rounded-[var(--q-radius-md)] border border-[var(--q-border-default)] text-sm text-[var(--q-text-secondary)] disabled:opacity-40 hover:border-[var(--q-border-strong)] transition-colors"
               >
                 Anterior
-              </button>
+              </motion.button>
               <span className="text-sm text-[var(--q-text-secondary)] tabular-nums">
                 {page} / {data.totalPages}
               </span>
-              <button
+              <motion.button
+                whileTap={{ scale: 0.97 }}
                 disabled={page >= data.totalPages}
                 onClick={() => setPage((p) => p + 1)}
                 className="px-4 py-2 rounded-[var(--q-radius-md)] border border-[var(--q-border-default)] text-sm text-[var(--q-text-secondary)] disabled:opacity-40 hover:border-[var(--q-border-strong)] transition-colors"
               >
                 Próxima
-              </button>
+              </motion.button>
             </div>
           )}
         </>

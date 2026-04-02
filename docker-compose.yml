@@ -21,29 +21,39 @@ services:
       POSTGRES_USER: quantum
       POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
     ports:
-      - "5432:5432"
+      - "${PG_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quantum -d quantum_project"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: ./backend
     ports:
-      - "3001:3001"
+      - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
     env_file: ./backend/.env
     environment:
-      # Override the host-facing DATABASE_URL from .env so the container
-      # reaches the postgres service by its Compose service hostname.
       DATABASE_URL: postgresql://quantum:${DB_PASSWORD:-password}@postgres:5432/quantum_project
       REDIS_URL: redis://:${REDIS_PASSWORD:-redispass}@redis:6379
+      PORT: ${BACKEND_PORT:-3001}
+      APP_URL: http://localhost:${FRONTEND_PORT:-3000}
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
     env_file: ./frontend/.env
+    environment:
+      PORT: ${FRONTEND_PORT:-3000}
+      BACKEND_INTERNAL_URL: http://backend:${BACKEND_PORT:-3001}
     depends_on:
       - backend
 

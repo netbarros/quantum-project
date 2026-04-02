@@ -23,7 +23,7 @@ function useCosts() {
 }
 
 export default function AdminCostsPage() {
-  const { data, isLoading } = useCosts();
+  const { data, isLoading, error } = useCosts();
 
   return (
     <div className="min-h-screen bg-[var(--q-bg-void)] p-6">
@@ -41,7 +41,11 @@ export default function AdminCostsPage() {
         <p className="text-[var(--q-text-secondary)] text-sm mt-1">Últimos 30 dias</p>
       </motion.div>
 
-      {isLoading ? (
+      {error ? (
+        <div className="p-4 rounded-[var(--q-radius-lg)] bg-[var(--q-red-dim)] border border-[var(--q-red-8)]/20 text-center">
+          <p className="text-[var(--q-red-9)] text-sm">Erro ao carregar custos.</p>
+        </div>
+      ) : isLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-32 bg-[var(--q-bg-surface)] rounded-[var(--q-radius-lg)] border border-[var(--q-border-default)] animate-pulse" />

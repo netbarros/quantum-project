@@ -111,6 +111,43 @@ export async function updatePremium(
   }
 }
 
+// PUT /api/admin/users/:id/role
+const RoleSchema = z.object({
+  role: z.enum(['USER', 'ADMIN']),
+});
+
+export async function updateRole(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const id: string = req.params['id'] as string;
+    const adminUserId = (req as AuthRequest).userId;
+
+    if (adminUserId === id) {
+      res.status(400).json({ error: { code: 'SELF_DEMOTION', message: 'Você não pode alterar seu próprio role.' } });
+      return;
+    }
+
+    const parsed = RoleSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: parsed.error.message } });
+      return;
+    }
+
+    const user = await prisma.user.update({
+      where: { id },
+      data: { role: parsed.data.role },
+      select: { id: true, email: true, name: true, role: true },
+    });
+
+    res.json({ user });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // GET /api/admin/analytics
 export async function getAnalytics(
   req: Request,

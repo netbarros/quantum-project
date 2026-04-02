@@ -29,7 +29,13 @@ interface BroadcastPayload {
 function useBroadcast() {
   return useMutation({
     mutationFn: (payload: BroadcastPayload) =>
-      api.post("/admin/broadcast", payload).then((r) => r.data),
+      api.post("/admin/broadcast", {
+        type: payload.type,
+        title: payload.title,
+        body: payload.body,
+        broadcast: true,
+        userFilter: payload.userFilter,
+      }).then((r) => r.data),
   });
 }
 
