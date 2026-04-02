@@ -128,7 +128,7 @@ export default function AdminPage() {
                   tick={{ fill: "#8b8ba8", fontSize: 10 }}
                   axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
                   tickLine={false}
-                  tickFormatter={(v: string) => `${v}d`}
+                  tickFormatter={(v) => `${v}d`}
                 />
                 <YAxis
                   tick={{ fill: "#8b8ba8", fontSize: 10 }}
@@ -144,8 +144,8 @@ export default function AdminPage() {
                     fontSize: "12px",
                     color: "#f0f0fa",
                   }}
-                  formatter={(value: number) => [value, "Usuários"]}
-                  labelFormatter={(label: string) => `Streak: ${label} dias`}
+                  formatter={(value) => [Number(value), "Usuários"]}
+                  labelFormatter={(label) => `Streak: ${label} dias`}
                 />
                 <Bar dataKey="count" radius={[4, 4, 0, 0]} animationDuration={800}>
                   {data.streakDistribution.map((_, i) => (

@@ -96,13 +96,13 @@ export default function AdminCostsPage() {
                     tick={{ fill: "#8b8ba8", fontSize: 10 }}
                     axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
                     tickLine={false}
-                    tickFormatter={(v: string) => v.slice(-5)}
+                    tickFormatter={(v) => String(v).slice(-5)}
                   />
                   <YAxis
                     tick={{ fill: "#8b8ba8", fontSize: 10 }}
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={(v: number) => `$${v.toFixed(2)}`}
+                    tickFormatter={(v) => `$${Number(v).toFixed(2)}`}
                     width={50}
                   />
                   <Tooltip
@@ -113,8 +113,8 @@ export default function AdminCostsPage() {
                       fontSize: "12px",
                       color: "#f0f0fa",
                     }}
-                    formatter={(value: number) => [`$${value.toFixed(4)}`, "Custo"]}
-                    labelFormatter={(label: string) => `Data: ${label}`}
+                    formatter={(value) => [`$${Number(value).toFixed(4)}`, "Custo"]}
+                    labelFormatter={(label) => `Data: ${label}`}
                   />
                   <Area
                     type="monotone"
