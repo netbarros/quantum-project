@@ -161,14 +161,18 @@ export default function SettingsPage() {
           <p className={SECTION_LABEL}>Conta</p>
           <div className="space-y-2">
 
-            <button className={`${CARD} w-full flex items-center justify-between text-sm text-[var(--q-text-primary)] hover:border-[var(--q-border-strong)] transition-colors`}>
+            <button
+              onClick={() => router.push('/plans')}
+              className={`${CARD} w-full flex items-center justify-between text-sm text-[var(--q-text-primary)] hover:border-[var(--q-border-strong)] transition-colors`}>
               Gerenciar assinatura
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </button>
 
-            <button className={`${CARD} w-full flex items-center justify-between text-sm text-[var(--q-text-primary)] hover:border-[var(--q-border-strong)] transition-colors`}>
+            <button
+              onClick={() => router.push('/profile')}
+              className={`${CARD} w-full flex items-center justify-between text-sm text-[var(--q-text-primary)] hover:border-[var(--q-border-strong)] transition-colors`}>
               Exportar meus dados
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

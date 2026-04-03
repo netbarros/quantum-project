@@ -33,8 +33,8 @@ export function useSessionHistory(): {
     try {
       setIsLoading(true);
       setError(null);
-      const result = await api.get<SessionHistoryItem[]>('/sessions/history');
-      setData(result.data);
+      const result = await api.get<{ history: SessionHistoryItem[] }>('/sessions/history');
+      setData(result.data.history ?? []);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar histórico');
     } finally {

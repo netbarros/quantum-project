@@ -2,148 +2,254 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
+import { api } from '@/lib/api';
 import { ConsciousnessOrb } from '@/components/ui/ConsciousnessOrb';
-import { TRANSITIONS, VARIANTS } from '@/lib/animations';
+import { SofiaOrb } from '@/components/session/SofiaOrb';
+import { TRANSITIONS, VARIANTS, stagger } from '@/lib/animations';
+import { useToast } from '@/components/ui/Toast';
+
+interface SubStatus {
+  isPremium: boolean;
+  premiumSince: string | null;
+  premiumUntil: string | null;
+  daysRemaining: number | null;
+  currentDay: number;
+  freeLimit: number;
+  paywallReached: boolean;
+}
 
 export default function PlansPage() {
   const router = useRouter();
-  const { user, accessToken, updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<'yearly' | 'monthly'>('yearly');
+  const [orderBump, setOrderBump] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleUpgrade = async () => {
+  const { data: subStatus } = useQuery({
+    queryKey: ['subscription', 'status'],
+    queryFn: () => api.get<SubStatus>('/subscription/status').then((r) => r.data),
+    staleTime: 1000 * 30,
+  });
+
+  // If already premium, show status
+  if (subStatus?.isPremium) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 bg-[var(--q-bg-void)]">
+        <motion.div {...stagger(0.1)} initial="initial" animate="animate" className="max-w-md text-center">
+          <motion.div variants={VARIANTS.fadeIn} className="mb-4">
+            <SofiaOrb blockType="affirmation" size="md" level={user?.level ?? "BEGINNER"} />
+          </motion.div>
+          <motion.h1 variants={VARIANTS.slideUp} className="text-2xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)] mb-3">
+            Acesso Completo Ativo
+          </motion.h1>
+          <motion.p variants={VARIANTS.slideUp} className="text-[var(--q-text-secondary)] text-sm mb-2">
+            Sua jornada Premium está ativa.
+          </motion.p>
+          {subStatus.daysRemaining && (
+            <motion.p variants={VARIANTS.slideUp} className="text-xs text-[var(--q-accent-9)] mb-6">
+              {subStatus.daysRemaining} dias restantes
+            </motion.p>
+          )}
+          <motion.button variants={VARIANTS.slideUp} whileTap={{ scale: 0.97 }}
+            onClick={() => router.push('/home')}
+            className="h-12 px-8 rounded-full bg-[var(--q-accent-8)] text-white font-medium shadow-[var(--q-shadow-glow-accent)]">
+            Voltar ao início
+          </motion.button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  const handleCheckout = async () => {
     setLoading(true);
-    setError(null);
-
     try {
-      const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-      const res = await fetch(`${BASE_URL}/subscription/upgrade`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ plan: 'yearly' }), // Mock body
+      const res = await api.post<{ user: typeof user; message: string }>('/subscription/upgrade', {
+        plan: selectedPlan,
+        orderBump,
       });
-
-      if (!res.ok) {
-        throw new Error('Falha ao processar assinatura. Tente novamente.');
-      }
-
-      const { user: updatedUser } = await res.json();
-      updateUser(updatedUser);
-      router.push('/session'); // Liberado
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro genérico');
+      if (res.data.user) updateUser(res.data.user);
+      setShowSuccess(true);
+      toast.show('Premium ativado com sucesso!', 'success');
+      setTimeout(() => router.push('/home'), 2500);
+    } catch {
+      toast.show('Erro ao processar. Tente novamente.', 'error');
+    } finally {
       setLoading(false);
     }
   };
 
-  const currentScore = user?.consciousnessScore || 70;
-  const currentLevel = user?.level || 'BEGINNER';
-  const currentStreak = user?.streak || 7;
+  const score = user?.consciousnessScore ?? 10;
+  const level = user?.level ?? 'BEGINNER';
+  const streak = user?.streak ?? 1;
+  const day = subStatus?.currentDay ?? 7;
+  const yearlyPrice = 297;
+  const monthlyPrice = 47;
+  const price = selectedPlan === 'yearly' ? yearlyPrice : monthlyPrice;
+  const period = selectedPlan === 'yearly' ? 'ano' : 'mês';
+
+  if (showSuccess) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 bg-[var(--q-bg-void)]">
+        <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 200 }}>
+          <SofiaOrb blockType="affirmation" size="lg" level={level} />
+        </motion.div>
+        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+          className="text-2xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)] mt-6 mb-2">
+          Bem-vinda ao Premium
+        </motion.h1>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+          className="text-[var(--q-text-secondary)] text-sm">
+          365 dias de transformação te esperam.
+        </motion.p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] flex flex-col items-center justify-center p-6 pb-12 overflow-x-hidden relative">
-      
-      {/* Glow Effect */}
+    <div className="min-h-screen bg-[var(--q-bg-void)] flex flex-col items-center p-6 pb-12 overflow-x-hidden relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[var(--q-accent-8)] rounded-full mix-blend-screen filter blur-[120px] opacity-10 pointer-events-none" />
 
-      <motion.div
-        variants={{ animate: { transition: { staggerChildren: 0.1 } } }}
-        initial="initial"
-        animate="animate"
-        className="w-full max-w-md z-10 flex flex-col items-center"
-      >
-        <motion.div variants={VARIANTS.slideUp} className="text-center mb-8">
-          <h1 className="font-[family-name:var(--font-instrument)] italic text-4xl text-[var(--q-text-primary)] mb-3">
+      <motion.div {...stagger(0.1)} initial="initial" animate="animate" className="w-full max-w-md z-10 flex flex-col items-center">
+        <motion.div variants={VARIANTS.slideUp} className="text-center mb-6">
+          <h1 className="font-[family-name:var(--font-instrument)] italic text-3xl text-[var(--q-text-primary)] mb-2">
             Sua consciência está despertando.
           </h1>
-          <p className="text-[var(--q-text-secondary)] text-base font-[family-name:var(--font-dm-sans)]">
-            Você chegou até aqui. O que acontece quando você não para?
+          <p className="text-[var(--q-text-secondary)] text-sm">
+            Em {streak} dias você alcançou {score} pontos. Imagine em 365.
           </p>
         </motion.div>
 
-        <motion.div variants={VARIANTS.slideUp} className="relative mb-10 mt-6">
-          <ConsciousnessOrb 
-            score={currentScore} 
-            level={currentLevel as any} 
-            streak={currentStreak} 
-            isActiveToday={false} 
-            size={160}
-          />
-          {/* Anel de bloqueio simbólico */}
-          <div className="absolute inset-0 border border-dashed border-[var(--q-accent-6)] rounded-full opacity-50 scale-110 pointer-events-none" />
-        </motion.div>
-
-        <motion.div variants={VARIANTS.slideUp} className="text-center mb-10 w-full">
-          <p className="text-[var(--q-text-primary)] text-sm mb-4">
-            Em <span className="font-bold text-[var(--q-accent-9)]">{currentStreak} dias</span> você chegou a {currentScore} pontos. <br/> Imagine em 365.
-          </p>
-          
-          {/* Timeline Visual */}
-          <div className="w-full relative mt-6 mb-2">
-            <div className="h-1 w-full bg-[var(--q-border-subtle)] rounded-full relative">
-              <div className="absolute top-0 left-0 h-1 bg-[var(--q-accent-8)] rounded-full" style={{ width: '12%' }} />
-            </div>
-            <div className="flex justify-between w-full text-xs text-[var(--q-text-tertiary)] mt-2">
-              <span className="text-[var(--q-accent-9)]">Dia 7 (Você está aqui)</span>
-              <span>Dia 365</span>
-            </div>
+        {/* Timeline */}
+        <motion.div variants={VARIANTS.slideUp} className="w-full mb-8">
+          <div className="h-1 w-full bg-[var(--q-border-subtle)] rounded-full relative">
+            <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min((day / 365) * 100, 100)}%` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="absolute top-0 left-0 h-1 bg-[var(--q-accent-8)] rounded-full" />
+          </div>
+          <div className="flex justify-between w-full text-xs text-[var(--q-text-tertiary)] mt-2">
+            <span className="text-[var(--q-accent-9)]">Dia {day}</span>
+            <span>Dia 365</span>
           </div>
         </motion.div>
 
-        {/* Offers Card */}
-        <motion.div variants={VARIANTS.slideUp} className="w-full bg-[var(--q-bg-surface)] border border-[var(--q-accent-6)] rounded-[var(--q-radius-xl)] p-5 mb-8 shadow-[var(--q-shadow-glow-accent)] relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-[var(--q-accent-8)] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-bl-lg">
-            Recomendado
-          </div>
-          <p className="text-[var(--q-text-primary)] font-semibold mb-1 mt-1 text-lg">Acesso Completo</p>
-          <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-3xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)]">R$ 297</span>
-            <span className="text-[var(--q-text-secondary)] text-sm">/ ano</span>
-          </div>
-          <ul className="space-y-3 mb-6">
-            {['Sessões adaptativas Ilimitadas', 'Personalização via I.A.', 'Modo Focus + Integração'].map((benefit, i) => (
-              <li key={i} className="flex items-center gap-3 text-sm text-[var(--q-text-secondary)]">
-                <span className="text-[var(--q-accent-9)]">✓</span> {benefit}
+        {/* Plan Selection */}
+        <motion.div variants={VARIANTS.slideUp} className="w-full grid grid-cols-2 gap-3 mb-4">
+          {([
+            { key: 'yearly' as const, label: 'Anual', price: 'R$ 297', sub: '/ano', save: 'Economize 48%' },
+            { key: 'monthly' as const, label: 'Mensal', price: 'R$ 47', sub: '/mês', save: '' },
+          ]).map((plan) => (
+            <motion.button
+              key={plan.key}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setSelectedPlan(plan.key)}
+              className={`p-4 rounded-[var(--q-radius-lg)] border text-left transition-all ${
+                selectedPlan === plan.key
+                  ? 'border-[var(--q-accent-8)] bg-[var(--q-accent-dim)] shadow-[var(--q-shadow-glow-accent)]'
+                  : 'border-[var(--q-border-default)] bg-[var(--q-bg-surface)]'
+              }`}
+            >
+              <p className="text-xs text-[var(--q-text-tertiary)] uppercase tracking-wider mb-1">{plan.label}</p>
+              <p className="text-xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)]">{plan.price}</p>
+              <p className="text-[10px] text-[var(--q-text-secondary)]">{plan.sub}</p>
+              {plan.save && <p className="text-[10px] text-[var(--q-green-9)] mt-1 font-medium">{plan.save}</p>}
+            </motion.button>
+          ))}
+        </motion.div>
+
+        {/* Benefits */}
+        <motion.div variants={VARIANTS.slideUp} className="w-full bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] rounded-[var(--q-radius-lg)] p-5 mb-4">
+          <ul className="space-y-3">
+            {[
+              'Sessões adaptativas ilimitadas com Sofia IA',
+              'Personalização comportamental em tempo real',
+              'Reflexões e jornal integrados',
+              'Todos os níveis de consciência (BEGINNER→INTEGRATED)',
+              'Música ambiente e voz de Sofia',
+            ].map((b, i) => (
+              <li key={i} className="flex items-start gap-3 text-sm text-[var(--q-text-secondary)]">
+                <span className="text-[var(--q-accent-9)] mt-0.5">✓</span> {b}
               </li>
             ))}
           </ul>
         </motion.div>
 
-        {error && (
-          <motion.div variants={VARIANTS.slideUp} className="w-full mb-4 text-center">
-            <p className="text-[var(--q-red-9)] text-sm">{error}</p>
-          </motion.div>
-        )}
-
-        <motion.div variants={VARIANTS.slideUp} className="w-full space-y-4">
+        {/* Order Bump */}
+        <motion.div variants={VARIANTS.slideUp} className="w-full mb-6">
           <motion.button
-            onClick={handleUpgrade}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setOrderBump(!orderBump)}
+            className={`w-full p-4 rounded-[var(--q-radius-lg)] border text-left transition-all ${
+              orderBump
+                ? 'border-[var(--q-amber-8)] bg-[var(--q-amber-dim)]'
+                : 'border-[var(--q-border-subtle)] bg-[var(--q-bg-surface)]'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-5 h-5 rounded flex items-center justify-center ${
+                orderBump ? 'bg-[var(--q-amber-8)] text-white' : 'border border-[var(--q-border-default)]'
+              }`}>
+                {orderBump && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-[var(--q-text-primary)]">
+                  Adicionar Modo Focus + Integração
+                </p>
+                <p className="text-xs text-[var(--q-text-tertiary)]">
+                  Meditações guiadas exclusivas + exercícios de integração corporal
+                </p>
+              </div>
+              <span className="text-sm font-bold text-[var(--q-amber-9)]">+R$ 27</span>
+            </div>
+          </motion.button>
+        </motion.div>
+
+        {/* Checkout Summary */}
+        <motion.div variants={VARIANTS.slideUp} className="w-full bg-[var(--q-bg-raised)] rounded-[var(--q-radius-lg)] p-4 mb-4">
+          <div className="flex justify-between text-sm text-[var(--q-text-secondary)] mb-1">
+            <span>Plano {selectedPlan === 'yearly' ? 'Anual' : 'Mensal'}</span>
+            <span className="text-[var(--q-text-primary)]">R$ {price}</span>
+          </div>
+          {orderBump && (
+            <div className="flex justify-between text-sm text-[var(--q-text-secondary)] mb-1">
+              <span>Modo Focus</span>
+              <span className="text-[var(--q-text-primary)]">R$ 27</span>
+            </div>
+          )}
+          <div className="border-t border-[var(--q-border-subtle)] mt-2 pt-2 flex justify-between">
+            <span className="text-sm font-medium text-[var(--q-text-primary)]">Total</span>
+            <span className="text-lg font-bold text-[var(--q-accent-9)] font-[family-name:var(--font-instrument)] italic">
+              R$ {price + (orderBump ? 27 : 0)}
+            </span>
+          </div>
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div variants={VARIANTS.slideUp} className="w-full">
+          <motion.button
+            onClick={handleCheckout}
             disabled={loading}
-            whileTap={{ scale: 0.98 }}
-            className="w-full h-14 rounded-full bg-[var(--q-accent-8)] text-white font-medium shadow-md transition-all flex items-center justify-center disabled:opacity-50"
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.01 }}
+            className="w-full h-14 rounded-full bg-[var(--q-accent-8)] text-white font-medium shadow-[var(--q-shadow-glow-accent)] transition-all flex items-center justify-center disabled:opacity-50"
           >
-            {loading ? 'Processando (Mock) ...' : 'Continuar minha jornada'}
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            className="w-full h-12 rounded-full border border-[var(--q-border-subtle)] text-[var(--q-text-secondary)] font-medium bg-[var(--q-bg-surface)] hover:text-[var(--q-text-primary)] transition-all"
-          >
-            Ver mais detalhes (R$ 47/m)
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
+                Processando...
+              </span>
+            ) : `Ativar Premium — R$ ${price + (orderBump ? 27 : 0)}/${period}`}
           </motion.button>
         </motion.div>
 
-        <motion.div variants={VARIANTS.slideUp} className="mt-8 text-center">
-          <p className="text-xs text-[var(--q-text-tertiary)] flex items-center justify-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[var(--q-green-9)] inline-block flash-anim" /> 
-            4.200+ pessoas em transformação hoje
-          </p>
+        <motion.div variants={VARIANTS.fadeIn} className="mt-6 text-center space-y-1">
+          <p className="text-[10px] text-[var(--q-text-tertiary)]">Pagamento seguro · Cancele quando quiser</p>
+          <p className="text-[10px] text-[var(--q-text-tertiary)]">4.200+ pessoas em transformação</p>
         </motion.div>
-
       </motion.div>
     </div>
   );

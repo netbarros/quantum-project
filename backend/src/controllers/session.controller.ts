@@ -241,7 +241,7 @@ export const sessionController = {
         self?.isPremium === true &&
         (self.premiumUntil === null || self.premiumUntil > now);
 
-      const where: Prisma.ContentWhereInput = { userId: req.userId! };
+      const where: Prisma.ContentWhereInput = { userId: req.userId!, isCompleted: true };
       if (!premiumActive && self) {
         where.day = { gte: minHistoryDayForFreeTier(self.currentDay) };
       }
