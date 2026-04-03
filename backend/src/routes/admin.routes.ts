@@ -13,6 +13,7 @@ import {
   testAiGeneration,
   getRevenue,
   getPayments,
+  testStripeConnection,
 } from '../controllers/admin.controller';
 import { sendNotification } from '../controllers/notification.controller';
 
@@ -31,6 +32,7 @@ router.post('/admin/broadcast', sendNotification);
 router.get('/admin/ai-config', getAiConfig);
 router.put('/admin/ai-config', updateAiConfig);
 router.post('/admin/ai-config/test', testAiGeneration);
+router.post('/admin/ai-config/test-stripe', testStripeConnection);
 router.get('/admin/revenue', getRevenue);
 router.get('/admin/payments', getPayments);
 

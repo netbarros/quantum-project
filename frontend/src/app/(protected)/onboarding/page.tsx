@@ -143,7 +143,7 @@ export default function OnboardingPage() {
   };
 
   const handleRevealComplete = () => {
-    router.push('/session');
+    router.push('/home');
   };
 
   if (showReveal) {

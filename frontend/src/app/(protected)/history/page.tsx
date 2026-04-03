@@ -104,9 +104,14 @@ export default function HistoryPage(): React.ReactElement {
       animate="animate"
       className="min-h-screen px-4 py-6 max-w-xl mx-auto"
     >
-      <h1 className="text-2xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)] mb-6">
-        Sua Jornada
-      </h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)]">
+          Sua Jornada
+        </h1>
+        <a href="/journal" className="text-xs text-[var(--q-accent-9)] hover:text-[var(--q-text-primary)] transition-colors">
+          Diário →
+        </a>
+      </div>
 
       {isLoading && (
         <div className="space-y-3">

@@ -391,6 +391,19 @@ export default function AdminAiConfigPage() {
                   }}
                 />
               </div>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={async () => {
+                  try {
+                    toast.show("Testando Stripe...", "info");
+                    const res = await api.post<{ connected: boolean; mode: string; message: string }>("/admin/ai-config/test-stripe");
+                    toast.show(res.data.message, res.data.connected ? "success" : res.data.mode === "demo" ? "info" : "error");
+                  } catch { toast.show("Falha ao testar Stripe", "error"); }
+                }}
+                className="mt-3 w-full h-9 rounded-full border border-[var(--q-border-default)] text-[var(--q-text-secondary)] text-xs font-medium hover:border-[var(--q-border-strong)] transition-colors"
+              >
+                Testar Conexão Stripe
+              </motion.button>
               <p className="text-[10px] text-[var(--q-text-tertiary)] mt-2">Crie em dashboard.stripe.com — suporta cartão, PIX, boleto</p>
             </motion.div>
 

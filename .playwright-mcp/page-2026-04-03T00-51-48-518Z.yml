@@ -1,0 +1,53 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Quantum" [ref=e5] [cursor=pointer]:
+          - /url: /session
+        - generic [ref=e6]:
+          - link "Início" [ref=e7] [cursor=pointer]:
+            - /url: /home
+          - link "Hoje" [ref=e8] [cursor=pointer]:
+            - /url: /session
+          - link "Jornada" [ref=e9] [cursor=pointer]:
+            - /url: /history
+          - link "Planos" [ref=e10] [cursor=pointer]:
+            - /url: /plans
+          - link "Perfil" [ref=e11] [cursor=pointer]:
+            - /url: /profile
+          - link "Admin" [ref=e12] [cursor=pointer]:
+            - /url: /admin
+            - text: Admin
+          - button "Sair" [ref=e14]
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Admin" [ref=e17] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e18]
+          - text: Admin
+        - heading "Broadcast" [level=1] [ref=e20]
+        - paragraph [ref=e21]: Enviar notificação push para usuários
+        - generic [ref=e22]:
+          - generic [ref=e23]:
+            - generic [ref=e24]: Tipo de notificação
+            - generic [ref=e25]:
+              - button "🔔Lembrete Diário" [ref=e26]
+              - button "🔥Reset Motivacional" [ref=e27]
+              - button "🌱Fluxo de Recuperação" [ref=e28]
+              - button "⚙️Sistema" [ref=e29]
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e32]: Título
+              - 'textbox "Ex: Hora da sua prática diária" [ref=e33]'
+            - generic [ref=e34]:
+              - generic [ref=e35]: Mensagem
+              - textbox "Cada momento de presença transforma sua jornada..." [ref=e36]
+              - paragraph [ref=e37]: 0/500
+          - generic [ref=e38]:
+            - generic [ref=e39]: Destinatários
+            - generic [ref=e40]:
+              - button "Todos os usuários" [ref=e41]
+              - button "Apenas Premium" [ref=e42]
+              - button "Apenas Free" [ref=e43]
+          - button "Enviar Notificação" [disabled] [ref=e44]
+  - alert [ref=e45]

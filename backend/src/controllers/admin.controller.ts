@@ -465,6 +465,32 @@ export async function testAiGeneration(
   }
 }
 
+// POST /api/admin/ai-config/test-stripe
+export async function testStripeConnection(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { getStripe } = await import('../services/StripeService');
+    const stripe = await getStripe();
+    if (!stripe) {
+      res.json({ connected: false, mode: 'demo', message: 'Nenhuma chave Stripe configurada — modo demo ativo' });
+      return;
+    }
+    const balance = await stripe.balance.retrieve();
+    const isLive = balance.livemode;
+    res.json({
+      connected: true,
+      mode: isLive ? 'live' : 'test',
+      message: `Stripe ${isLive ? 'LIVE' : 'TEST'} conectado`,
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Chave inválida';
+    res.json({ connected: false, mode: 'error', message: `Falha: ${message}` });
+  }
+}
+
 // ── Revenue & Payment Endpoints ──────────────────────────────────
 
 // GET /api/admin/revenue

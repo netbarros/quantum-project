@@ -91,12 +91,19 @@ export default function PlansPage() {
     }
   };
 
+  const { data: prices } = useQuery({
+    queryKey: ['subscription', 'prices'],
+    queryFn: () => api.get<{ yearly: { amount: number }; monthly: { amount: number }; orderBump: { amount: number } }>('/subscription/prices').then((r) => r.data),
+    staleTime: 1000 * 60 * 30,
+  });
+
   const score = user?.consciousnessScore ?? 10;
   const level = user?.level ?? 'BEGINNER';
   const streak = user?.streak ?? 1;
   const day = subStatus?.currentDay ?? 7;
-  const yearlyPrice = 297;
-  const monthlyPrice = 47;
+  const yearlyPrice = prices?.yearly?.amount ?? 297;
+  const monthlyPrice = prices?.monthly?.amount ?? 47;
+  const bumpPrice = prices?.orderBump?.amount ?? 27;
   const price = selectedPlan === 'yearly' ? yearlyPrice : monthlyPrice;
   const period = selectedPlan === 'yearly' ? 'ano' : 'mês';
 
@@ -211,7 +218,7 @@ export default function PlansPage() {
                   Meditações guiadas exclusivas + exercícios de integração corporal
                 </p>
               </div>
-              <span className="text-sm font-bold text-[var(--q-amber-9)]">+R$ 27</span>
+              <span className="text-sm font-bold text-[var(--q-amber-9)]">+R$ {bumpPrice}</span>
             </div>
           </motion.button>
         </motion.div>
@@ -225,13 +232,13 @@ export default function PlansPage() {
           {orderBump && (
             <div className="flex justify-between text-sm text-[var(--q-text-secondary)] mb-1">
               <span>Modo Focus</span>
-              <span className="text-[var(--q-text-primary)]">R$ 27</span>
+              <span className="text-[var(--q-text-primary)]">R$ {bumpPrice}</span>
             </div>
           )}
           <div className="border-t border-[var(--q-border-subtle)] mt-2 pt-2 flex justify-between">
             <span className="text-sm font-medium text-[var(--q-text-primary)]">Total</span>
             <span className="text-lg font-bold text-[var(--q-accent-9)] font-[family-name:var(--font-instrument)] italic">
-              R$ {price + (orderBump ? 27 : 0)}
+              R$ {price + (orderBump ? bumpPrice : 0)}
             </span>
           </div>
         </motion.div>
@@ -250,7 +257,7 @@ export default function PlansPage() {
                 <motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
                 Processando...
               </span>
-            ) : `Ativar Premium — R$ ${price + (orderBump ? 27 : 0)}/${period}`}
+            ) : `Ativar Premium — R$ ${price + (orderBump ? bumpPrice : 0)}/${period}`}
           </motion.button>
         </motion.div>
 
