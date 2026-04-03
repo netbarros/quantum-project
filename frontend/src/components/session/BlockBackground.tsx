@@ -37,7 +37,8 @@ function SacredGeometry({ blockType, colors }: { blockType: string; colors: { pr
         <svg viewBox="0 0 400 400" className="w-full h-full">
           {[60, 90, 120, 150, 180].map((r, i) => (
             <motion.circle key={i} cx="200" cy="200" r={r} stroke={i % 2 === 0 ? c.primary : c.secondary} {...common}
-              animate={{ r: [r, r + 8, r], strokeOpacity: [0.08, 0.15, 0.08] }}
+              animate={{ scale: [1, 1.06, 1], strokeOpacity: [0.08, 0.15, 0.08] }}
+              style={{ transformOrigin: "200px 200px" }}
               transition={{ duration: 8 + i * 2, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
             />
           ))}
@@ -94,7 +95,8 @@ function SacredGeometry({ blockType, colors }: { blockType: string; colors: { pr
       return (
         <svg viewBox="0 0 400 400" className="w-full h-full">
           <motion.circle cx="200" cy="200" r="40" stroke={c.primary} {...common} strokeOpacity="0.1"
-            animate={{ r: [40, 50, 40], strokeOpacity: [0.08, 0.15, 0.08] }}
+            animate={{ scale: [1, 1.25, 1], strokeOpacity: [0.08, 0.15, 0.08] }}
+            style={{ transformOrigin: "200px 200px" }}
             transition={{ duration: 4, repeat: Infinity }}
           />
           {Array.from({ length: 12 }).map((_, i) => {

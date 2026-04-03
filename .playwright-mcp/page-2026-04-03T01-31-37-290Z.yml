@@ -1,0 +1,23 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Quantum" [ref=e5] [cursor=pointer]:
+          - /url: /session
+        - generic [ref=e6]:
+          - link "Início" [ref=e7] [cursor=pointer]:
+            - /url: /home
+            - text: Início
+          - link "Hoje" [ref=e9] [cursor=pointer]:
+            - /url: /session
+          - link "Jornada" [ref=e10] [cursor=pointer]:
+            - /url: /history
+          - link "Planos" [ref=e11] [cursor=pointer]:
+            - /url: /plans
+          - link "Perfil" [ref=e12] [cursor=pointer]:
+            - /url: /profile
+          - link "Admin" [ref=e13] [cursor=pointer]:
+            - /url: /admin
+          - button "Sair" [ref=e14]
+    - main [ref=e15]
+  - alert [ref=e18]

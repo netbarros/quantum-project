@@ -169,8 +169,9 @@ export function SofiaOrb({
           cx={r} cy={r} r={r - 16}
           fill={`url(#sg-${blockType}-${size})`}
           filter={`url(#sgf-${blockType}-${size})`}
-          animate={{ r: [r - 16, r - 13, r - 16] }}
+          animate={{ scale: [1, 1.08, 1] }}
           transition={{ duration: breathDur, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: `${r}px ${r}px` }}
         />
 
         {/* Specular highlight — upper left */}

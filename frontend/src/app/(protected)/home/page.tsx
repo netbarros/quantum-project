@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
@@ -55,16 +55,14 @@ export default function HomePage() {
   const name = user?.name || "viajante";
 
   const toast = useToast();
-  const searchParams = useSearchParams();
 
   // Detect payment success redirect from Stripe
   useEffect(() => {
-    if (searchParams.get("payment") === "success") {
+    if (typeof window !== "undefined" && window.location.search.includes("payment=success")) {
       toast.show("Premium ativado com sucesso!", "success");
-      // Clean URL
       window.history.replaceState({}, "", "/home");
     }
-  }, [searchParams, toast]);
+  }, [toast]);
 
   const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ["session", "daily-check"],
