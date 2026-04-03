@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../config/database';
 import { AuthRequest } from '../types/api.types';
-import { createCheckoutSession, verifyWebhookSignature, getPrices, getStripe } from '../services/StripeService';
+import { createCheckoutSession, verifyWebhookSignature, getPrices, getStripe, updatePricesConfig } from '../services/StripeService';
 import { logger } from '../lib/logger';
 
 const CheckoutSchema = z.object({
@@ -28,7 +28,7 @@ export const subscriptionController = {
       if (!user) { res.status(404).json({ error: 'User not found' }); return; }
 
       const { plan, orderBump } = parsed.data;
-      const prices = getPrices();
+      const prices = await getPrices();
       const amount = (plan === 'yearly' ? prices.yearly.amount : prices.monthly.amount) + (orderBump ? prices.orderBump.amount : 0);
 
       // Try Stripe first
@@ -124,7 +124,7 @@ export const subscriptionController = {
    * GET /api/subscription/prices
    */
   async getPricing(_req: Request, res: Response): Promise<void> {
-    res.json(getPrices());
+    res.json(await getPrices());
   },
 };
 

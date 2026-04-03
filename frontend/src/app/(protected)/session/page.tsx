@@ -7,10 +7,20 @@ import { SofiaOrb } from '@/components/session/SofiaOrb';
 import { AmbientParticles } from '@/components/session/AmbientParticles';
 import { PaywallModal } from '@/components/PaywallModal';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function SessionPage() {
+  // Kill ALL audio when leaving this page
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined') {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        // Stop any playing <audio> elements (ambient music)
+        document.querySelectorAll('audio').forEach((a) => { a.pause(); a.src = ''; });
+      }
+    };
+  }, []);
   const { session, progress, loading, error, completeSession, paywallRequired, paywallCurrentDay } = useSession();
   const [completionData, setCompletionData] = useState<CompletionResult | null>(null);
   const [completeError, setCompleteError] = useState<string | null>(null);

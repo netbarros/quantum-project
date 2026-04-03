@@ -114,7 +114,18 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-[var(--q-border-subtle)] text-center text-sm text-[var(--q-text-secondary)]">
+          <div className="mt-4 text-center">
+            <button type="button" onClick={() => {
+              const emailEl = document.querySelector('input[type="text"], input[placeholder*="email"]') as HTMLInputElement;
+              if (emailEl?.value) {
+                fetch('/api/auth/forgot-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: emailEl.value }) });
+                alert('Se o email existir, um link de reset será enviado.');
+              } else { alert('Digite seu email primeiro.'); }
+            }} className="text-xs text-[var(--q-text-tertiary)] hover:text-[var(--q-accent-9)] transition-colors">
+              Esqueceu a senha?
+            </button>
+          </div>
+          <div className="mt-4 pt-6 border-t border-[var(--q-border-subtle)] text-center text-sm text-[var(--q-text-secondary)]">
             <p>
               Novo por aqui?{' '}
               <Link href="/register" className="text-[var(--q-accent-9)] hover:text-white transition-colors font-medium ml-1">

@@ -598,3 +598,46 @@ export async function getPayments(
     next(err);
   }
 }
+
+// ── Pricing Management ──────────────────────────────────────────
+
+import { getPrices as getStripePrices, updatePricesConfig } from '../services/StripeService';
+
+// GET /api/admin/pricing
+export async function getAdminPricing(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const prices = await getStripePrices();
+    res.json(prices);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// PUT /api/admin/pricing
+const PricingUpdateSchema = z.object({
+  yearly: z.number().min(100).optional(),
+  monthly: z.number().min(100).optional(),
+  orderbump: z.number().min(100).optional(),
+});
+
+export async function updateAdminPricing(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const parsed = PricingUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: parsed.error.message } });
+      return;
+    }
+    await updatePricesConfig(parsed.data);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}

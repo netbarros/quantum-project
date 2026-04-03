@@ -14,6 +14,8 @@ import {
   getRevenue,
   getPayments,
   testStripeConnection,
+  getAdminPricing,
+  updateAdminPricing,
 } from '../controllers/admin.controller';
 import { sendNotification } from '../controllers/notification.controller';
 
@@ -35,5 +37,7 @@ router.post('/admin/ai-config/test', testAiGeneration);
 router.post('/admin/ai-config/test-stripe', testStripeConnection);
 router.get('/admin/revenue', getRevenue);
 router.get('/admin/payments', getPayments);
+router.get('/admin/pricing', getAdminPricing);
+router.put('/admin/pricing', updateAdminPricing);
 
 export default router;
