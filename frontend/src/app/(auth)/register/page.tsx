@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { VARIANTS, TRANSITIONS } from '@/lib/animations';
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,23 +19,26 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedPlan = searchParams.get('plan');
+  const paymentSuccess = searchParams.get('payment') === 'success';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (!email || !password || !confirmPassword) {
-      setError('Preencha os campos obrigatórios');
+      setError('Preencha os campos obrigatorios');
       return;
     }
 
     if (password.length < 8) {
-      setError('A senha deve ter no mínimo 8 caracteres');
+      setError('A senha deve ter no minimo 8 caracteres');
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('As senhas não coincidem');
+      setError('As senhas nao coincidem');
       return;
     }
 
@@ -51,8 +54,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[var(--q-bg-void)] relative overflow-hidden">
-      
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-nebula relative overflow-hidden">
+
       {/* Background Decorative Blur */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -69,18 +72,33 @@ export default function RegisterPage() {
         transition={TRANSITIONS.spring}
         className="w-full max-w-md z-10 py-10"
       >
+        {/* Plan Badge */}
+        {(selectedPlan || paymentSuccess) && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 mx-auto w-fit px-4 py-2 rounded-full border border-[var(--q-accent-8)]/40 bg-[var(--q-accent-dim)] text-center"
+          >
+            <p className="text-xs text-[var(--q-accent-9)] font-medium">
+              {paymentSuccess
+                ? 'Pagamento confirmado — crie sua conta'
+                : `Plano ${selectedPlan === 'yearly' ? 'Anual' : 'Mensal'} selecionado`}
+            </p>
+          </motion.div>
+        )}
+
         <div className="mb-8 text-center">
           <h1 className="text-4xl text-[var(--q-text-primary)] font-[family-name:var(--font-instrument)] italic mb-2 tracking-tight">
             O Despertar
           </h1>
           <p className="text-[var(--q-text-secondary)] text-sm">
-            Uma vida com intenção começa com uma decisão.
+            Uma vida com intencao comeca com uma decisao.
           </p>
         </div>
 
         <Card className="backdrop-blur-xl bg-[var(--q-bg-surface)]/80">
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               className="mb-4 p-3 rounded-[var(--q-radius-md)] bg-[var(--q-amber-9)]/10 text-[var(--q-amber-8)] text-sm border border-[var(--q-amber-8)]/20 font-medium"
@@ -112,7 +130,7 @@ export default function RegisterPage() {
               id="password"
               type="password"
               label="Senha *"
-              placeholder="Mínimo de 8 caracteres"
+              placeholder="Minimo de 8 caracteres"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -133,7 +151,7 @@ export default function RegisterPage() {
 
           <div className="mt-8 pt-6 border-t border-[var(--q-border-subtle)] text-center text-sm text-[var(--q-text-secondary)]">
             <p>
-              Já possui uma conta?{' '}
+              Ja possui uma conta?{' '}
               <Link href="/login" className="text-[var(--q-accent-9)] hover:text-white transition-colors font-medium ml-1">
                 Acesse aqui
               </Link>
@@ -142,5 +160,13 @@ export default function RegisterPage() {
         </Card>
       </motion.div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }

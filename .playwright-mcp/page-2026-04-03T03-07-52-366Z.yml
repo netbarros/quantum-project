@@ -1,0 +1,30 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - paragraph [ref=e4]: Quantum
+    - img [ref=e7] [cursor=pointer]
+    - heading "Sua jornada de despertar comeca aqui" [level=1] [ref=e14]
+    - paragraph [ref=e15]: 365 dias de transformacao comportamental com Sofia, sua guia de consciencia.
+    - button "Comecar Transformacao" [ref=e16]
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - img [ref=e21]
+      - generic [ref=e25]:
+        - heading "Sofia IA" [level=3] [ref=e26]
+        - paragraph [ref=e27]: Terapeuta espiritualista personalizada que se adapta ao seu momento de vida
+    - generic [ref=e28]:
+      - img [ref=e30]
+      - generic [ref=e33]:
+        - heading "365 Dias" [level=3] [ref=e34]
+        - paragraph [ref=e35]: Jornada completa com sessoes adaptativas que evoluem com voce
+    - generic [ref=e36]:
+      - img [ref=e38]
+      - generic [ref=e40]:
+        - heading "Consciencia" [level=3] [ref=e41]
+        - paragraph [ref=e42]: Score, streaks e niveis que refletem sua evolucao real de identidade
+  - generic [ref=e44]:
+    - paragraph [ref=e45]: 4.200+
+    - paragraph [ref=e46]: pessoas em transformacao
+  - contentinfo [ref=e47]:
+    - paragraph [ref=e48]:
+      - text: Ja tem conta?
+      - button "Entrar" [ref=e49]

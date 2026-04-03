@@ -128,8 +128,8 @@ export default function LoginPage() {
           <div className="mt-4 pt-6 border-t border-[var(--q-border-subtle)] text-center text-sm text-[var(--q-text-secondary)]">
             <p>
               Novo por aqui?{' '}
-              <Link href="/register" className="text-[var(--q-accent-9)] hover:text-white transition-colors font-medium ml-1">
-                Iniciar transformação
+              <Link href="/plans" className="text-[var(--q-accent-9)] hover:text-white transition-colors font-medium ml-1">
+                Iniciar transformacao
               </Link>
             </p>
           </div>

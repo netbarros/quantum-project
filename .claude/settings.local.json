@@ -16,7 +16,14 @@
       "mcp__plugin_playwright_playwright__browser_fill_form",
       "mcp__plugin_playwright_playwright__browser_click",
       "mcp__plugin_playwright_playwright__browser_console_messages",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(find:*)",
+      "Bash(find \"C:/lotus/devocional/frontend/src/app/\\(auth\\)\" -type f -name \"*.tsx\")",
+      "Bash(netstat -ano)",
+      "Bash(powershell -c \"Get-NetTCPConnection -LocalPort 3000 -State Listen 2>$null | Select-Object LocalPort,OwningProcess\")",
+      "Bash(taskkill //F //PID 7164)",
+      "Bash(taskkill //F //PID 11604)",
+      "Bash(taskkill //F //PID 22532)"
     ]
   }
 }

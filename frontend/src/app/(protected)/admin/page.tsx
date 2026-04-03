@@ -167,6 +167,7 @@ export default function AdminPage() {
             {[
               { label: "Usuários", href: "/admin/users", icon: "👥" },
               { label: "Analytics", href: "/admin/analytics", icon: "📊" },
+              { label: "Pagamentos", href: "/admin/payments", icon: "💳" },
               { label: "Receita", href: "/admin/revenue", icon: "💰" },
               { label: "Custos AI", href: "/admin/costs", icon: "🤖" },
               { label: "Config IA", href: "/admin/ai-config", icon: "🧠" },
