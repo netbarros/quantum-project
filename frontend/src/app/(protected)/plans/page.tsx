@@ -126,7 +126,7 @@ export default function PlansPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] flex flex-col items-center p-6 pb-12 overflow-x-hidden relative">
+    <div className="min-h-screen bg-nebula flex flex-col items-center p-6 pb-12 overflow-x-hidden relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[var(--q-accent-8)] rounded-full mix-blend-screen filter blur-[120px] opacity-10 pointer-events-none" />
 
       <motion.div {...stagger(0.1)} initial="initial" animate="animate" className="w-full max-w-md z-10 flex flex-col items-center">

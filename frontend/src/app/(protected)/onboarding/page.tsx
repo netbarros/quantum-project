@@ -158,7 +158,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--q-bg-void)] p-safe pt-8 pb-8 px-6 overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-nebula-centered p-safe pt-8 pb-8 px-6 overflow-hidden">
       
       {/* Progress Bar Top */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--q-border-subtle)]">

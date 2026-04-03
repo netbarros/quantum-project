@@ -32,7 +32,7 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] px-4 py-6 md:px-6">
+    <div className="min-h-screen bg-nebula px-4 py-6 md:px-6">
       <div className="max-w-xl mx-auto">
         <motion.div variants={VARIANTS.pageEnter} initial="initial" animate="animate" className="mb-6">
           <h1 className="text-2xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)] mb-1">

@@ -30,6 +30,12 @@
   --q-accent-dim: rgba(139,92,246,0.15);
   --q-accent-glow: 0 0 30px rgba(139,92,246,0.4);
 
+  /* --- Nebula Backgrounds (from design system) --- */
+  --q-nebula-purple: radial-gradient(ellipse 80% 60% at 70% 20%, rgba(109,40,217,0.35) 0%, transparent 60%);
+  --q-nebula-centered: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(109,40,217,0.25) 0%, transparent 70%);
+  --q-nebula-left: radial-gradient(ellipse 70% 50% at 20% 30%, rgba(76,29,149,0.4) 0%, transparent 65%);
+  --q-nebula-blue: radial-gradient(ellipse 50% 40% at 80% 60%, rgba(29,78,216,0.2) 0%, transparent 60%);
+
   /* --- Progress — Quantum Cyan --- */
   --q-cyan-9:     #67E8F9;
   --q-cyan-8:     #22D3EE;
@@ -124,6 +130,25 @@ body {
 /* ── Glow utilities ────────────────────────────────────────── */
 .glow-accent { box-shadow: var(--q-shadow-glow-accent); }
 .text-glow-accent { text-shadow: 0 0 20px rgba(139,92,246,0.5); }
+
+/* ── Cosmic nebula backgrounds ────────────────────────────────── */
+.bg-nebula {
+  background:
+    var(--q-nebula-purple),
+    var(--q-nebula-blue),
+    var(--q-bg-void);
+}
+.bg-nebula-centered {
+  background:
+    var(--q-nebula-centered),
+    var(--q-bg-void);
+}
+.bg-nebula-left {
+  background:
+    var(--q-nebula-left),
+    var(--q-nebula-blue),
+    var(--q-bg-void);
+}
 
 /* ── Ambient orb animation ────────────────────────────────── */
 @keyframes drift {

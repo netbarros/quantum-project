@@ -95,7 +95,7 @@ export default function ProfilePage() {
   const levelMeta = profile.level ? LEVEL_LABELS[profile.level] ?? null : null;
 
   return (
-    <div className="min-h-screen bg-[var(--q-bg-void)] p-6 pb-24">
+    <div className="min-h-screen bg-nebula p-6 pb-24">
       <motion.div {...stagger(0.1)} initial="initial" animate="animate" className="max-w-xl mx-auto space-y-4">
         <motion.div variants={VARIANTS.slideUp} className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-[family-name:var(--font-instrument)] italic font-bold text-[var(--q-text-primary)]">

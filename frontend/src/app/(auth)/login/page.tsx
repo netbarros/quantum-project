@@ -44,7 +44,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-[var(--q-bg-void)] relative overflow-hidden">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-nebula relative overflow-hidden">
       
       {/* Background Decorative Blur */}
       <motion.div

@@ -94,7 +94,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-[85vh] bg-[var(--q-bg-void)] relative overflow-hidden">
+    <div className="min-h-[85vh] bg-nebula-centered relative overflow-hidden">
       <BlockBackground blockType="direction" />
       <AmbientParticles blockType="direction" count={10} />
 

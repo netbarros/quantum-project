@@ -102,7 +102,7 @@ export default function HistoryPage(): React.ReactElement {
       variants={VARIANTS.pageEnter}
       initial="initial"
       animate="animate"
-      className="min-h-screen px-4 py-6 max-w-xl mx-auto"
+      className="min-h-screen px-4 py-6 max-w-xl mx-auto bg-nebula"
     >
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)]">
