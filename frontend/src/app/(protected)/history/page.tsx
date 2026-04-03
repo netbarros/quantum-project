@@ -104,12 +104,28 @@ export default function HistoryPage(): React.ReactElement {
       animate="animate"
       className="min-h-screen px-4 py-6 max-w-xl mx-auto bg-nebula"
     >
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)]">
+      {/* Header with mandala orb — per inspiration/sua-jornada.png */}
+      <div className="flex flex-col items-center text-center mb-8">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="w-16 h-16 mb-4 opacity-30"
+        >
+          <svg viewBox="0 0 64 64" className="w-full h-full">
+            {[0, 30, 60, 90, 120, 150].map((angle, i) => (
+              <circle key={i} cx={32 + Math.cos(angle * Math.PI / 180) * 18} cy={32 + Math.sin(angle * Math.PI / 180) * 18} r="12" fill="none" stroke="var(--q-accent-9)" strokeWidth="0.5" opacity="0.5" />
+            ))}
+            <circle cx="32" cy="32" r="12" fill="none" stroke="var(--q-accent-8)" strokeWidth="0.6" />
+          </svg>
+        </motion.div>
+        <h1 className="text-3xl font-[family-name:var(--font-instrument)] italic text-[var(--q-text-primary)] mb-2">
           Sua Jornada
         </h1>
-        <a href="/journal" className="text-xs text-[var(--q-accent-9)] hover:text-[var(--q-text-primary)] transition-colors">
-          Diário →
+        <p className="text-sm text-[var(--q-text-secondary)] max-w-xs leading-relaxed">
+          O registro das suas epifanias e transformações. Cada sessão guardada para revisitar.
+        </p>
+        <a href="/journal" className="text-xs text-[var(--q-accent-9)] hover:text-[var(--q-text-primary)] transition-colors mt-3">
+          Ver diário de reflexões →
         </a>
       </div>
 

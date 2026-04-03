@@ -131,6 +131,7 @@ export default function PlansPage() {
 
       <motion.div {...stagger(0.1)} initial="initial" animate="animate" className="w-full max-w-md z-10 flex flex-col items-center">
         <motion.div variants={VARIANTS.slideUp} className="text-center mb-6">
+          <p className="text-[10px] text-[var(--q-accent-9)] uppercase tracking-[0.2em] mb-2">Soulful Premium Checkout</p>
           <h1 className="font-[family-name:var(--font-instrument)] italic text-3xl text-[var(--q-text-primary)] mb-2">
             Sua consciência está despertando.
           </h1>
