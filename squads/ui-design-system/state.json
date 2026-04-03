@@ -1,0 +1,13 @@
+{
+  "squad": "ui-design-system",
+  "status": "pending",
+  "step": { "current": 0, "total": 4, "label": "Aguardando execução" },
+  "agents": [
+    { "id": "pixel-onboarding", "name": "Pixel Onboarding", "icon": "🎯", "status": "pending" },
+    { "id": "pixel-checkout", "name": "Pixel Checkout", "icon": "💳", "status": "pending" },
+    { "id": "pixel-pages", "name": "Pixel Pages", "icon": "📄", "status": "pending" },
+    { "id": "pixel-validator", "name": "Pixel Validator", "icon": "🔍", "status": "pending" }
+  ],
+  "startedAt": null,
+  "updatedAt": "2026-04-03T01:10:00.000Z"
+}

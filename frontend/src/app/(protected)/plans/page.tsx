@@ -243,6 +243,31 @@ export default function PlansPage() {
           </div>
         </motion.div>
 
+        {/* Payment Methods */}
+        <motion.div variants={VARIANTS.slideUp} className="w-full mb-4">
+          <p className="text-[10px] text-[var(--q-text-tertiary)] uppercase tracking-wider text-center mb-3">Formas de Pagamento</p>
+          <div className="flex items-center justify-center gap-4">
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-12 h-8 rounded-md bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] flex items-center justify-center">
+                <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><rect x="1" y="1" width="18" height="12" rx="2" stroke="var(--q-text-tertiary)" strokeWidth="1.2" /><line x1="1" y1="5" x2="19" y2="5" stroke="var(--q-text-tertiary)" strokeWidth="1.2" /></svg>
+              </div>
+              <span className="text-[9px] text-[var(--q-text-tertiary)]">Cartão</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-12 h-8 rounded-md bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] flex items-center justify-center">
+                <span className="text-xs font-bold text-[var(--q-cyan-9)]">PIX</span>
+              </div>
+              <span className="text-[9px] text-[var(--q-text-tertiary)]">Pix</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-12 h-8 rounded-md bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2C4.686 2 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 10.5c-2.485 0-4.5-2.015-4.5-4.5S5.515 3.5 8 3.5s4.5 2.015 4.5 4.5-2.015 4.5-4.5 4.5z" fill="var(--q-text-tertiary)" /><path d="M7 6h2v1H7zm0 2h2v3H7z" fill="var(--q-text-tertiary)" /></svg>
+              </div>
+              <span className="text-[9px] text-[var(--q-text-tertiary)]">Boleto</span>
+            </div>
+          </div>
+        </motion.div>
+
         {/* CTA */}
         <motion.div variants={VARIANTS.slideUp} className="w-full">
           <motion.button

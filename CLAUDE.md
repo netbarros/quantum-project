@@ -357,6 +357,7 @@ Este projeto usa [OpenSquad](https://github.com/renatoasse/opensquad) para orque
 /opensquad run squad-fase-8-admin          # Fase 8
 /opensquad run squad-fase-9-producao       # Fase 9
 /opensquad run admin-completo              # Admin system production-ready
+/opensquad run ui-design-system            # Implementar TODA inspiração visual (docs/inspiracao/)
 ```
 
 ---

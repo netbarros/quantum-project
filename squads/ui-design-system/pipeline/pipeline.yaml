@@ -1,0 +1,16 @@
+# Pipeline: UI Design System
+# 4 steps: parallel implementation → checkpoint → polish → checkpoint
+
+steps:
+  - file: steps/step-01-implement-all.md
+    name: "Implementação Paralela (4 agentes)"
+  - file: steps/step-02-checkpoint-review.md
+    name: "Checkpoint — Revisar Visual"
+  - file: steps/step-03-polish.md
+    name: "Polimento Final"
+  - file: steps/step-04-checkpoint-approve.md
+    name: "Checkpoint — Aprovação"
+
+checkpoints:
+  - step-02-checkpoint-review
+  - step-04-checkpoint-approve

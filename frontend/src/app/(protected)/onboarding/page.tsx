@@ -15,12 +15,12 @@ const STEPS = [
     title: 'O que mais te acompanha ultimamente?',
     description: 'Escolha o que mais ressoa com você neste momento.',
     options: [
-      { value: 'anxiety', label: 'Ansiedade', emoji: '🌀' },
-      { value: 'lack_of_purpose', label: 'Falta de propósito', emoji: '🌫️' },
-      { value: 'emotional_instability', label: 'Instabilidade emocional', emoji: '🌊' },
-      { value: 'spiritual_disconnection', label: 'Desconexão espiritual', emoji: '🕊️' },
-      { value: 'lack_of_discipline', label: 'Falta de disciplina', emoji: '⏳' },
-      { value: 'identity_crisis', label: 'Crise de identidade', emoji: '🪞' },
+      { value: 'anxiety', label: 'Ansiedade', emoji: '😰', description: 'Sentimentos constantes de preocupação e tensão' },
+      { value: 'lack_of_purpose', label: 'Falta de propósito', emoji: '🌫️', description: 'Sensação de vazio e ausência de direção na vida' },
+      { value: 'emotional_instability', label: 'Instabilidade emocional', emoji: '💔', description: 'Oscilações de humor frequentes e intensas' },
+      { value: 'spiritual_disconnection', label: 'Desconexão espiritual', emoji: '🕊️', description: 'Falta de sentido e conexão com algo maior' },
+      { value: 'lack_of_discipline', label: 'Falta de disciplina', emoji: '⏳', description: 'Dificuldade em manter hábitos e rotinas saudáveis' },
+      { value: 'identity_crisis', label: 'Crise de identidade', emoji: '🪞', description: 'Questionamento profundo sobre quem você é' },
     ],
   },
   {

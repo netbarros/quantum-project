@@ -1,0 +1,31 @@
+# Squad: UI Design System — Implementar TODA a inspiração visual
+# Cada tela das imagens em docs/inspiracao/ deve ser fielmente replicada
+
+squad:
+  code: ui-design-system
+  name: "UI Design System Completo"
+  description: "Implementar fielmente todas as 12 telas de inspiração: onboarding com ícones/emojis, checkout com ícones de pagamento, profile reveal com orb cósmico, history com mandala, todas as páginas com nebulosa"
+  icon: "🎨"
+  version: "1.0"
+  created: "2026-04-03"
+
+agents:
+  - id: pixel-onboarding
+    file: ./agents/pixel-onboarding.agent.md
+  - id: pixel-checkout
+    file: ./agents/pixel-checkout.agent.md
+  - id: pixel-pages
+    file: ./agents/pixel-pages.agent.md
+  - id: pixel-validator
+    file: ./agents/pixel-validator.agent.md
+
+pipeline:
+  file: ./pipeline/pipeline.yaml
+
+skills:
+  - code_read
+  - code_write
+  - grep_search
+
+data:
+  - pipeline/data/design-gaps.md
