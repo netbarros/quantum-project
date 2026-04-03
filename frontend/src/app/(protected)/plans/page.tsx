@@ -68,13 +68,21 @@ export default function PlansPage() {
   const handleCheckout = async () => {
     setLoading(true);
     try {
-      const res = await api.post<{ user: typeof user; message: string }>('/subscription/upgrade', {
+      const res = await api.post<{ mode: string; url?: string; user?: typeof user; message?: string }>('/subscription/checkout', {
         plan: selectedPlan,
         orderBump,
       });
+
+      if (res.data.mode === 'stripe' && res.data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = res.data.url;
+        return;
+      }
+
+      // Demo mode — activated directly
       if (res.data.user) updateUser(res.data.user);
       setShowSuccess(true);
-      toast.show('Premium ativado com sucesso!', 'success');
+      toast.show(res.data.message || 'Premium ativado!', 'success');
       setTimeout(() => router.push('/home'), 2500);
     } catch {
       toast.show('Erro ao processar. Tente novamente.', 'error');

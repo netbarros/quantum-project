@@ -341,6 +341,8 @@ export async function getAiConfig(
     const maskedKey = hasKey ? '••••' + aiConfig.apiKey.slice(-4) : '';
 
     const hasElKey = aiConfig.elevenlabsKey.length > 0;
+    const stripeKey = await ConfigCache.getInstance().get('STRIPE_SECRET_KEY') || process.env.STRIPE_SECRET_KEY?.trim() || '';
+    const hasStripeKey = stripeKey.length > 0;
 
     res.json({
       hasApiKey: hasKey,
@@ -353,6 +355,8 @@ export async function getAiConfig(
       hasElevenlabsKey: hasElKey,
       elevenlabsKeyPreview: hasElKey ? '••••' + aiConfig.elevenlabsKey.slice(-4) : '',
       elevenlabsVoiceId: aiConfig.elevenlabsVoiceId,
+      hasStripeKey,
+      stripeKeyPreview: hasStripeKey ? '••••' + stripeKey.slice(-4) : '',
     });
   } catch (err) {
     next(err);
@@ -368,6 +372,8 @@ const AiConfigSchema = z.object({
   enabledModels: z.array(z.string()).optional(),
   elevenlabsKey: z.string().optional(),
   elevenlabsVoiceId: z.string().optional(),
+  stripeSecretKey: z.string().optional(),
+  stripeWebhookSecret: z.string().optional(),
 });
 
 export async function updateAiConfig(
@@ -406,6 +412,12 @@ export async function updateAiConfig(
     }
     if (parsed.data.elevenlabsVoiceId !== undefined) {
       await cache.set('ELEVENLABS_VOICE_ID', parsed.data.elevenlabsVoiceId, false, adminId);
+    }
+    if (parsed.data.stripeSecretKey !== undefined) {
+      await cache.set('STRIPE_SECRET_KEY', parsed.data.stripeSecretKey, true, adminId);
+    }
+    if (parsed.data.stripeWebhookSecret !== undefined) {
+      await cache.set('STRIPE_WEBHOOK_SECRET', parsed.data.stripeWebhookSecret, true, adminId);
     }
 
     res.json({ success: true });
@@ -447,6 +459,114 @@ export async function testAiGeneration(
       isFallback: result.isFallback ?? false,
       responseTimeMs: duration,
       contentPreview: result.content?.direction?.substring(0, 200) ?? '',
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ── Revenue & Payment Endpoints ──────────────────────────────────
+
+// GET /api/admin/revenue
+export async function getRevenue(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const [totalPayments, completedPayments, recentPayments, monthlyPayments] = await Promise.all([
+      prisma.payment.count(),
+      prisma.payment.count({ where: { status: 'completed' } }),
+      prisma.payment.findMany({
+        where: { status: 'completed', completedAt: { gte: thirtyDaysAgo } },
+        orderBy: { completedAt: 'desc' },
+        include: { user: { select: { email: true, name: true } } },
+        take: 20,
+      }),
+      prisma.payment.aggregate({
+        where: { status: 'completed', completedAt: { gte: thirtyDaysAgo } },
+        _sum: { amount: true },
+        _count: true,
+      }),
+    ]);
+
+    const allTimeRevenue = await prisma.payment.aggregate({
+      where: { status: 'completed' },
+      _sum: { amount: true },
+    });
+
+    const premiumUsers = await prisma.user.count({ where: { isPremium: true } });
+    const totalUsers = await prisma.user.count();
+
+    res.json({
+      totalRevenue: allTimeRevenue._sum.amount ?? 0,
+      monthlyRevenue: monthlyPayments._sum.amount ?? 0,
+      totalPayments,
+      completedPayments,
+      monthlyPaymentCount: monthlyPayments._count,
+      premiumUsers,
+      totalUsers,
+      conversionRate: totalUsers > 0 ? Math.round((premiumUsers / totalUsers) * 10000) / 100 : 0,
+      recentPayments: recentPayments.map((p) => ({
+        id: p.id,
+        email: p.user.email,
+        name: p.user.name,
+        amount: p.amount,
+        plan: p.plan,
+        orderBump: p.orderBump,
+        status: p.status,
+        completedAt: p.completedAt,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/admin/payments
+export async function getPayments(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const page = parseInt(String(req.query.page ?? '1'), 10);
+    const limit = parseInt(String(req.query.limit ?? '20'), 10);
+    const status = req.query.status as string | undefined;
+
+    const where: Record<string, unknown> = {};
+    if (status) where.status = status;
+
+    const [payments, total] = await Promise.all([
+      prisma.payment.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { user: { select: { email: true, name: true } } },
+      }),
+      prisma.payment.count({ where }),
+    ]);
+
+    res.json({
+      payments: payments.map((p) => ({
+        id: p.id,
+        email: p.user.email,
+        name: p.user.name,
+        amount: p.amount,
+        currency: p.currency,
+        plan: p.plan,
+        orderBump: p.orderBump,
+        status: p.status,
+        stripeSessionId: p.stripeSessionId,
+        createdAt: p.createdAt,
+        completedAt: p.completedAt,
+      })),
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
     });
   } catch (err) {
     next(err);

@@ -11,6 +11,8 @@ import {
   getAiConfig,
   updateAiConfig,
   testAiGeneration,
+  getRevenue,
+  getPayments,
 } from '../controllers/admin.controller';
 import { sendNotification } from '../controllers/notification.controller';
 
@@ -29,5 +31,7 @@ router.post('/admin/broadcast', sendNotification);
 router.get('/admin/ai-config', getAiConfig);
 router.put('/admin/ai-config', updateAiConfig);
 router.post('/admin/ai-config/test', testAiGeneration);
+router.get('/admin/revenue', getRevenue);
+router.get('/admin/payments', getPayments);
 
 export default router;

@@ -78,6 +78,7 @@ model User {
   notifications      Notification[]
   journalEntries     JournalEntry[]
   events             UserEvent[]
+  payments           Payment[]
 
   @@index([email])
   @@index([isPremium])
@@ -179,4 +180,23 @@ model SystemConfig {
   encrypted Boolean  @default(false)
   updatedAt DateTime @updatedAt
   updatedBy String?
+}
+
+model Payment {
+  id                    String   @id @default(uuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount                Float
+  currency              String   @default("BRL")
+  status                String   @default("pending") // pending, completed, failed, refunded
+  plan                  String   // yearly, monthly
+  orderBump             Boolean  @default(false)
+  stripeSessionId       String?  @unique
+  stripePaymentIntentId String?
+  completedAt           DateTime?
+  createdAt             DateTime @default(now())
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
 }

@@ -1,19 +1,15 @@
-import { Router } from 'express';
-import { subscriptionController } from '../controllers/subscription.controller';
+import { Router, raw } from 'express';
+import { subscriptionController, handleStripeWebhook } from '../controllers/subscription.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
-import { validate, upgradeSubscriptionSchema } from '../middleware/validation.middleware';
 
 const router = Router();
 
-// POST /api/subscription/upgrade
-router.post(
-  '/subscription/upgrade',
-  authMiddleware,
-  validate(upgradeSubscriptionSchema),
-  subscriptionController.upgrade
-);
-
-// GET /api/subscription/status
+router.post('/subscription/checkout', authMiddleware, subscriptionController.checkout);
+router.post('/subscription/upgrade', authMiddleware, subscriptionController.upgrade);
 router.get('/subscription/status', authMiddleware, subscriptionController.getStatus);
+router.get('/subscription/prices', subscriptionController.getPricing);
+
+// Stripe webhook — needs raw body, no JSON parsing
+router.post('/webhook/stripe', raw({ type: 'application/json' }), handleStripeWebhook);
 
 export default router;

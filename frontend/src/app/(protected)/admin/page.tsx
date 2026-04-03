@@ -167,7 +167,8 @@ export default function AdminPage() {
             {[
               { label: "Usuários", href: "/admin/users", icon: "👥" },
               { label: "Analytics", href: "/admin/analytics", icon: "📊" },
-              { label: "Custos AI", href: "/admin/costs", icon: "💰" },
+              { label: "Receita", href: "/admin/revenue", icon: "💰" },
+              { label: "Custos AI", href: "/admin/costs", icon: "🤖" },
               { label: "Config IA", href: "/admin/ai-config", icon: "🧠" },
               { label: "Broadcast", href: "/admin/broadcast", icon: "📢" },
             ].map(({ label, href, icon }) => (

@@ -1,0 +1,8 @@
+[      91ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3000/login:0
+[     102ms] [LOG] SW registered: ServiceWorkerRegistration @ http://localhost:3000/_next/static/chunks/16u5rf7ffahjv.js:8
+[   21211ms] [ERROR] Error: <circle> attribute r: Expected length, "undefined". @ http://localhost:3000/_next/static/chunks/0e.~swiv33am0.js:0
+[   21211ms] [ERROR] Error: <circle> attribute r: Expected length, "undefined". @ http://localhost:3000/_next/static/chunks/0e.~swiv33am0.js:0
+[   21211ms] [ERROR] Error: <circle> attribute r: Expected length, "undefined". @ http://localhost:3000/_next/static/chunks/0e.~swiv33am0.js:0
+[   21211ms] [ERROR] Error: <circle> attribute r: Expected length, "undefined". @ http://localhost:3000/_next/static/chunks/0e.~swiv33am0.js:0
+[   21211ms] [ERROR] Error: <circle> attribute r: Expected length, "undefined". @ http://localhost:3000/_next/static/chunks/0e.~swiv33am0.js:0
+[   21212ms] [ERROR] Error: <circle> attribute r: Expected length, "undefined". @ http://localhost:3000/_next/static/chunks/0e.~swiv33am0.js:0

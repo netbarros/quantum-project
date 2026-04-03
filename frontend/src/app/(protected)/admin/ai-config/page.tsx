@@ -26,6 +26,8 @@ interface AiConfig {
   hasElevenlabsKey: boolean;
   elevenlabsKeyPreview: string;
   elevenlabsVoiceId: string;
+  hasStripeKey: boolean;
+  stripeKeyPreview: string;
 }
 
 interface TestResult {
@@ -353,6 +355,43 @@ export default function AdminAiConfigPage() {
                 </motion.button>
               )}
               <p className="text-[10px] text-[var(--q-text-tertiary)] mt-2">Free tier: 10k chars/mês em elevenlabs.io — vozes: Sarah (padrão), Rachel, Bella</p>
+            </motion.div>
+
+            {/* Stripe Payment Config */}
+            <motion.div variants={VARIANTS.cardReveal} transition={TRANSITIONS.spring} className="bg-[var(--q-bg-surface)] border border-[var(--q-border-default)] rounded-[var(--q-radius-lg)] p-5">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-medium text-[var(--q-text-secondary)] uppercase tracking-wider">Pagamentos — Stripe</p>
+                <div className="flex items-center gap-2">
+                  <span className={`w-2.5 h-2.5 rounded-full ${data.hasStripeKey ? "bg-[var(--q-green-8)] shadow-[0_0_6px_var(--q-green-8)]" : "bg-[var(--q-text-tertiary)]"}`} />
+                  <span className="text-[10px] text-[var(--q-text-tertiary)]">{data.hasStripeKey ? "Ativo" : "Modo demo (sem cobrança)"}</span>
+                </div>
+              </div>
+              <p className="text-[10px] text-[var(--q-text-tertiary)] mb-3">Sem Stripe, o checkout ativa premium direto (modo demo). Com Stripe, redireciona para checkout real com cartão/PIX.</p>
+              {data.hasStripeKey && <p className="text-sm text-[var(--q-text-tertiary)] mb-3 font-mono">{data.stripeKeyPreview}</p>}
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input type="password" placeholder="sk_live_... ou sk_test_..."
+                    className="flex-1 h-9 px-3 rounded-[var(--q-radius-md)] bg-[var(--q-bg-depth)] border border-[var(--q-border-default)] text-xs text-[var(--q-text-primary)] placeholder:text-[var(--q-text-tertiary)] focus:outline-none focus:border-[var(--q-accent-8)] transition-colors font-mono"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (val) { updateMutation.mutate({ stripeSecretKey: val }); (e.target as HTMLInputElement).value = ''; }
+                      }
+                    }}
+                  />
+                  <span className="text-[10px] text-[var(--q-text-tertiary)] self-center">Enter para salvar</span>
+                </div>
+                <input type="password" placeholder="Webhook secret (whsec_...)"
+                  className="w-full h-9 px-3 rounded-[var(--q-radius-md)] bg-[var(--q-bg-depth)] border border-[var(--q-border-default)] text-xs text-[var(--q-text-primary)] placeholder:text-[var(--q-text-tertiary)] focus:outline-none focus:border-[var(--q-accent-8)] transition-colors font-mono"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (val) { updateMutation.mutate({ stripeWebhookSecret: val }); (e.target as HTMLInputElement).value = ''; }
+                    }
+                  }}
+                />
+              </div>
+              <p className="text-[10px] text-[var(--q-text-tertiary)] mt-2">Crie em dashboard.stripe.com — suporta cartão, PIX, boleto</p>
             </motion.div>
 
             {/* Test AI Card */}

@@ -1,0 +1,43 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e22]:
+    - navigation [ref=e23]:
+      - generic [ref=e24]:
+        - link "Quantum" [ref=e25] [cursor=pointer]:
+          - /url: /session
+        - generic [ref=e26]:
+          - link "Início" [ref=e27] [cursor=pointer]:
+            - /url: /home
+            - text: Início
+          - link "Hoje" [ref=e29] [cursor=pointer]:
+            - /url: /session
+          - link "Jornada" [ref=e30] [cursor=pointer]:
+            - /url: /history
+          - link "Planos" [ref=e31] [cursor=pointer]:
+            - /url: /plans
+          - link "Perfil" [ref=e32] [cursor=pointer]:
+            - /url: /profile
+          - link "Admin" [ref=e33] [cursor=pointer]:
+            - /url: /admin
+          - button "Sair" [ref=e34]
+    - main [ref=e35]:
+      - generic [ref=e36]:
+        - generic:
+          - generic:
+            - img
+        - generic [ref=e37]:
+          - img [ref=e40] [cursor=pointer]
+          - paragraph [ref=e47]: Sofia
+          - paragraph [ref=e48]: Testerw, você voltou. Dia 2 te espera. Vamos juntas?
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - generic [ref=e51]: 🔥
+              - generic [ref=e52]: 1d
+            - generic [ref=e53]:
+              - generic [ref=e54]: "10"
+              - generic [ref=e55]: pts
+            - generic [ref=e56]: Iniciante
+          - generic [ref=e57]:
+            - button "Iniciar sessão do dia 2" [ref=e58]
+            - button "Ver progresso" [ref=e59]
+          - paragraph [ref=e60]: Dia 2 de 365
+  - alert [ref=e21]
